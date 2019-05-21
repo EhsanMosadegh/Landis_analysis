@@ -26,7 +26,7 @@ fire = fire_type[fire_type_index]
 # select pollutant and units
 pollutant_index = 0 # 0-n
 pollutant_name_list = ['PM2.5' , 'PM10' , 'NOX' , 'NH3' , 'CO' , 'CO2']
-pollutant_unit_list = ['kg/day' , 'kg/day' , 'kg/day' , 'kg/day' , 'kg/day' , 'kg/day']
+pollutant_unit_list = ['tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day']
 pollutant = pollutant_name_list[pollutant_index] # index should be integer
 pollutant_unit = pollutant_unit_list[pollutant_index]
 
@@ -174,7 +174,7 @@ ax1.bar(x_ , y_ , width = 1 , color='r' , align='center')
 ax1.set_xlim(xmin=0, xmax=366)  # to start the plot from zero-zero
 ax1.set_ylim(ymin=0, ymax=500)
 ax1.set_xlabel('julian days' , fontsize=fsize)
-ax1.set_ylabel('number of fires' , fontsize=fsize)
+ax1.set_ylabel('area burned (10000 m2)' , fontsize=fsize)
 # rotate numnbers???
 
 # 2nd x-axis
