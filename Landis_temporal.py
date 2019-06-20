@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # controlling options:
 
 # select scenario number
-scenario_no = '5'
+scenario_no = '4'
 fsize= 8  # font-size
 plot_format = 'joined'   # 'joined' OR 'seperate'
 
@@ -36,6 +36,8 @@ scenario_year = 30
 time_scale = 'FireDay-30'
 var_1 = pollutant+'-'+fire+'-'+str(scenario_year) # all string
 
+print(f'-> temporal plotting of Landis scenario= {scenario_no} ...')
+print(f'-> pollutant= {pollutant}')
 print('-> variable 1 = %s'  %(time_scale) )
 print('-> variable 2 = %s'  %(var_1) )
 
@@ -289,3 +291,5 @@ plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_input
 saved_plot = plot_dir+plot_name
 #extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
 plt.savefig(saved_plot, dpi=1200 , format='png' )#, bbox_inches='tight')
+
+print( f'-> plot saved at= {saved_plot}')
