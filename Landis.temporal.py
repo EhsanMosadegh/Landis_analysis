@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 ############################################################
 # author: Ehsan Mosadegh
-# usage: to analyze LANDIS data, temporal analysis
+# usage: to analyze LANDIS dataset, temporal analysis
 # date: May 10, 2019
 # email: ehsan.mosadegh@gmail.com, ehsanm@dri.edu
 # notes:
 ############################################################
 
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-#==========
+#===========================================================
 # controlling options:
 
 # select scenario number
 scenario_no = '5'
-fsize=9  # font-size
+fsize= 8  # font-size
+plot_format = 'joined'   # 'joined' OR 'seperate'
 
 # select type of fire
 fire_type_index = 1 # 0-1
@@ -39,21 +39,21 @@ var_1 = pollutant+'-'+fire+'-'+str(scenario_year) # all string
 print('-> variable 1 = %s'  %(time_scale) )
 print('-> variable 2 = %s'  %(var_1) )
 
-#==========
+#===========================================================
 # define the input file
 
-input_file_name = '/Scenario_'+scenario_no+'_year_30_latlon.csv' # \ at the bigining
+input_file_name = 'Scenario_'+scenario_no+'_year_30_latlon.csv'
 
-input_file_path = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs'
+input_file_path = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/' # '/' at the end of the path
 
 input_file_full_path = input_file_path + input_file_name
 
-#==========
+#===========================================================
 # read-in data
 
 input_df = pd.read_csv( input_file_full_path , sep=',' , header=0 )#, names= ColumnList)# ,  index_listcol=0 ) why index_listcol does not work?
 
-#==========
+#===========================================================
 # group the dataset
 
 grouped_data_by_julian_day = input_df.groupby(time_scale) # group the dataset by jday
@@ -83,7 +83,7 @@ for keys in group_keys:
 
     key_list.append(keys)
 
-#==========
+#===========================================================
 # prepare lists for plotting
 
 # annual list of values
@@ -161,63 +161,67 @@ y2_ = yy2_[1:]
 #
 #plt.show()
 
-#==========
+#===========================================================
 # plotting
 
-#--- first plot= no. of fires
+if ( plot_format == 'seperate' ) :
+    #--- first plot= no. of fires
 
-# 1st x-axis
-ax1 = plt.subplot(211) # define ax1
-#ax1.grid(True)
-ax1.bar(x_ , y_ , width = 1 , color='r' , align='center')
+    # 1st x-axis
+    ax1 = plt.subplot(211) # define ax1
+    #ax1.grid(True)
+    ax1.bar(x_ , y_ , width = 1 , color='r' , align='center')
 
-ax1.set_xlim(xmin=0, xmax=366)  # to start the plot from zero-zero
-ax1.set_ylim(ymin=0, ymax=500)
-ax1.set_xlabel('julian days' , fontsize=fsize)
-ax1.set_ylabel('area burned (10000 m2)' , fontsize=fsize)
-# rotate numnbers???
+    ax1.set_xlim(xmin=0, xmax=366)  # to start the plot from zero-zero
+    ax1.set_ylim(ymin=0, ymax=500)
+    ax1.set_xlabel('julian days' , fontsize=fsize)
+    ax1.set_ylabel('area (pixel) burned (10^4 m2)' , fontsize=fsize)
+    # rotate numnbers???
 
-# 2nd x-axis
-ax11 = ax1.twiny()
-ax11_xtick_labels = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
-ax11_xtick_position_list = [0,31,60,91,121,152,182,213,244,274,305,335,366]
-ax11.set_xticks(ax11_xtick_position_list)      # position of x-ticks
-ax11.set_xticklabels(ax11_xtick_labels , fontsize=fsize)   # lable of x-ticks ; rotation='vertical'
-ax11.xaxis.set_ticks_position('bottom') # set the position of x-ticks of second x-axis to bottom
-ax11.xaxis.set_label_position('bottom') # set the position of label of second x-axis to bottom
-ax11.set_xlabel('month' , fontsize=fsize)
-ax11.spines['bottom'].set_position(('outward', 40))  # plot 2nd x-axis below the 1st axis
-#ax2.set_xlim(right=0.5)
-plt.title('frequency of fires in LANDIS scenario %s, 2016' %scenario_no , fontsize=fsize)
+    # 2nd x-axis
+    ax11 = ax1.twiny()
+    ax11_xtick_labels = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+    ax11_xtick_position_list = [0,31,60,91,121,152,182,213,244,274,305,335,366]
+    ax11.set_xticks(ax11_xtick_position_list)      # position of x-ticks
+    ax11.set_xticklabels(ax11_xtick_labels , fontsize=fsize)   # lable of x-ticks ; rotation='vertical'
+    ax11.xaxis.set_ticks_position('bottom') # set the position of x-ticks of second x-axis to bottom
+    ax11.xaxis.set_label_position('bottom') # set the position of label of second x-axis to bottom
+    ax11.set_xlabel('month' , fontsize=fsize)
+    ax11.spines['bottom'].set_position(('outward', 40))  # plot 2nd x-axis below the 1st axis
+    #ax2.set_xlim(right=0.5)
+    plt.title('frequency of fires in LANDIS scenario %s, 2016' %scenario_no , fontsize=fsize)
 
-#--- second plot= emission totals
+    #--- second plot= emission totals
 
-# 1st x-axis
-ax2 = plt.subplot(212) # define ax1 in .subplot() class
-#ax1.grid(True)
-ax2.bar(x_ , y2_ , width = 1 , color='r' , align='center')
+    # 1st x-axis
+    ax2 = plt.subplot(212) # define ax1 in .subplot() class
+    #ax1.grid(True)
+    ax2.bar(x_ , y2_ , width = 1 , color='r' , align='center')
 
-ax2.set_xlim(xmin=0, xmax=366)  # to start the plot from zero-zero
-ax2.set_ylim(ymin=0, ymax=500)
-ax2.set_xlabel('julian days' , fontsize=fsize)
-ax2.set_ylabel('total emissions (%s)' %pollutant_unit, fontsize=fsize)
-# rotate numnbers???
+    ax2.set_xlim(xmin=0, xmax=366)  # to start the plot from zero-zero
+    ax2.set_ylim(ymin=0, ymax=500)
+    ax2.set_xlabel('julian days' , fontsize=fsize)
+    ax2.set_ylabel('total emissions (%s)' %pollutant_unit, fontsize=fsize)
+    # rotate numnbers???
 
-# 2nd x-axis
-ax22 = ax2.twiny()
-ax22_xtick_labels = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
-ax22_xtick_position_list = [0,31,60,91,121,152,182,213,244,274,305,335,366]
-ax22.set_xticks(ax22_xtick_position_list)      # position of x-ticks
-ax22.set_xticklabels(ax22_xtick_labels , fontsize=fsize)   # lable of x-ticks ; rotation='vertical'
-ax22.xaxis.set_ticks_position('bottom') # set the position of x-ticks of second x-axis to bottom
-ax22.xaxis.set_label_position('bottom') # set the position of label of second x-axis to bottom
-ax22.set_xlabel('month' , fontsize=fsize)
-ax22.spines['bottom'].set_position(('outward', 40))  # plot 2nd x-axis below the 1st axis
-#ax2.set_xlim(right=0.5)
-plt.title('total daily emissions of %s from fires in LANDIS scenario %s, 2016' %(var_1,scenario_no) , fontsize=fsize)
-#plt.subplots_adjust(hspace=.2)
-plt.tight_layout()
-plt.show()
+    # 2nd x-axis
+    ax22 = ax2.twiny()
+    ax22_xtick_labels = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+    ax22_xtick_position_list = [0,31,60,91,121,152,182,213,244,274,305,335,366]
+    ax22.set_xticks(ax22_xtick_position_list)      # position of x-ticks
+    ax22.set_xticklabels(ax22_xtick_labels , fontsize=fsize)   # lable of x-ticks ; rotation='vertical'
+    ax22.xaxis.set_ticks_position('bottom') # set the position of x-ticks of second x-axis to bottom
+    ax22.xaxis.set_label_position('bottom') # set the position of label of second x-axis to bottom
+    ax22.set_xlabel('month' , fontsize=fsize)
+    ax22.spines['bottom'].set_position(('outward', 40))  # plot 2nd x-axis below the 1st axis
+    #ax2.set_xlim(right=0.5)
+    plt.title('total daily emissions of %s from fires in LANDIS scenario %s, 2016' %(var_1,scenario_no) , fontsize=fsize)
+    #plt.subplots_adjust(hspace=.2)
+    plt.tight_layout()
+    #plt.show()
+
+
+
 
 #---
 # some other method
@@ -235,18 +239,53 @@ plt.show()
 #ax2_xtick_position_list = [ x_listloc(month_count) for month_count in range(len(ax2_xtick_labels)) ] # another way to write for loop+function==3 lines to 1 line
 #---
 
-#==========
+if ( plot_format == 'joined') :
+
+    fig = plt.Figure()
+    ax1 = plt.subplot(2,1,2) # (row,col,index) draw 1st axis at bottom
+    ax2 = plt.subplot(2,1,1 , sharex=ax1 ) # the next axis on top of 1st, share ax1 properties
+
+    #ax1.get_shared_x_axes().join(ax1, ax2) # when each axis is created seperately, and then we want to join them afterwards
+
+    ax1_xtick_labels = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+    ax1_xtick_position_list = [0,31,60,91,121,152,182,213,244,274,305,335,366]
+
+    ax1.set_xticks( ax1_xtick_position_list )      # position of x-ticks
+    ax1.set_xticklabels( ax1_xtick_labels ) #, fontsize=8 )
+
+    # set limits for both axes
+    ax1.set_xlim( xmin=0, xmax=366 )  # to start the plot from zero-zero
+    ax1.set_ylim( ymin=0, ymax=500 )
+   # ax2.set_xlim( xmin=0, xmax=366 )
+    ax2.set_ylim( ymin=0, ymax=500 )
+
+   # plt.setp( ax2.get_xticklabels(), visible=False) turns off ax2 x-labels
+
+    # make grids for both axes
+    ax1.grid( ax1_xtick_position_list )
+    ax2.grid(True)
+
+    #ax1.spines['bottom'].set_position(('outward', 40))  # plot 2nd x-axis below the 1st axis
+
+    # plot the values
+    ax1.bar( x_, y_ , width = 1 , color='r' , align='center' , label="1 row" )
+    ax2.bar( x_ , y2_ , width = 1 , color='r' , align='center' , label="1 row" )
+
+    ax1.set_xlabel('month' , fontsize=fsize)
+
+    plt.title('frequency of fires in LANDIS scenario %s, 2016' %scenario_no , fontsize=fsize)
+    ax1.set_ylabel('area (pixel) burned (10^4 m2)' , fontsize=fsize)
+    ax2.set_ylabel('total emissions (%s)' %pollutant_unit, fontsize=fsize)
+
+
+
+#===========================================================
 # save the plot
 
 plot_name = 'no_of_fires_scen'+scenario_no+'.png'
 
-plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/plots/'
+plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
 
 saved_plot = plot_dir+plot_name
 #extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-plt.savefig(saved_plot, bbox_inches='tight')
-
-
-
-
-
+plt.savefig(saved_plot, dpi=1200 , format='png' )#, bbox_inches='tight')
