@@ -165,7 +165,16 @@ if (stats == 'yes') :
     month_dict= {'jan': [1,31],
                 'feb': [32,60],
                 'mar': [61,91],
-                
+                'apr': [92,121],
+                'may': [122,152],
+                'jun': [153,182],
+                'jul': [183,213],
+                'aug': [214,244],
+                'sep': [245,274],
+                'oct': [275,305],
+                'nov': [305,335],
+                'dec': [336,366]
+
     }
 
     month_list= [ *month_dict.keys() ]  # * makes a list of ...; or we can do: list( month_dict.keys() )
