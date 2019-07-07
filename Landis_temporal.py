@@ -15,8 +15,9 @@ import matplotlib.pyplot as plt
 
 # select scenario number
 scenario_no = '4'
-fsize= 8  # font-size
+fsize= 7  # font-size
 plot_format = 'joined'   # 'joined' OR 'seperate'
+make_plot = 'no'    # 'yes' or 'no'
 
 # select type of fire
 fire_type_index = 1 # 0-1
@@ -24,7 +25,7 @@ fire_type = ['Flaming' ,  'Smoldering']
 fire = fire_type[fire_type_index]
 
 # select pollutant and units
-pollutant_index = 0 # 0-n
+pollutant_index = 4 # 0-n
 pollutant_name_list = ['PM2.5' , 'PM10' , 'NOX' , 'NH3' , 'CO' , 'CO2']
 pollutant_unit_list = ['tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day']
 pollutant = pollutant_name_list[pollutant_index] # index should be integer
@@ -33,13 +34,15 @@ pollutant_unit = pollutant_unit_list[pollutant_index]
 
 # other settinggs
 scenario_year = 30
-time_scale = 'FireDay-30'
-var_1 = pollutant+'-'+fire+'-'+str(scenario_year) # all string
+grouping_param = 'FireDay-30'
+pol_col = pollutant+'-'+fire+'-'+str(scenario_year) # all string
 
+print(f'-> scenario is= {scenario_no}')
+print(f'-> make plot is= {make_plot}')
 print(f'-> temporal plotting of Landis scenario= {scenario_no} ...')
 print(f'-> pollutant= {pollutant}')
-print('-> variable 1 = %s'  %(time_scale) )
-print('-> variable 2 = %s'  %(var_1) )
+print(f'-> grouping parameter is= {grouping_param}')
+print('-> variable 2 = %s'  %(pol_col) )
 
 #===========================================================
 # define the input file
@@ -58,87 +61,92 @@ input_df = pd.read_csv( input_file_full_path , sep=',' , header=0 )#, names= Col
 #===========================================================
 # group the dataset
 
-grouped_data_by_julian_day = input_df.groupby(time_scale) # group the dataset by jday
+grouped_data = input_df.groupby(grouping_param) # group the dataset by jday
 
-# group_keys = grouped_data_by_julian_day.groups.keys # does not get the keys!
+# jdays_with_fires_list = grouped_data.groups.keys # does not get the keys!
 
-group_keys = list(grouped_data_by_julian_day.groups)  # use list() function to geth the keys of each group
+jdays_with_fires_list = list(grouped_data.groups)  # use list() function to geth the keys of each group
+print(f'-> days with fire are= {jdays_with_fires_list}')
 
-total_no_of_fires_list = []
+total_burning_pixels_per_day_list = []
 
-total_emission_annual_list = []
+total_pol_emissions_per_day_list = []
 
-key_list = []
+list_of_burning_days= []
 
 # for each group we extract no. of fires per each day, keys are days with fires
-for keys in group_keys:
+for jday_with_fire in jdays_with_fires_list:
 
-    single_group = grouped_data_by_julian_day.get_group(keys)  # get any group by its 'key'
+    filtered_key_group = grouped_data.get_group(jday_with_fire)  # filter dataset for each day with fire, by its key and get a group by its 'key'
+    #print(type(filtered_key_group))
 
-    no_of_fire = single_group['pointid'].count() # count the number fo fires per each group/day. 'pointid' no. is unique for each fire.
+    burning_pixels_per_day = filtered_key_group['pointid'].count() # count the number fo fires per each group/day. 'pointid' no. is unique for each fire.
+    print(f'-> noumber of burned pixels for jday {jday_with_fire} are= {burning_pixels_per_day}')
 
-    total_emission_per_day = single_group[var_1].sum() # sum total emission of a pollutant per day
+    total_emissions_per_day = filtered_key_group[pol_col].sum() # sum total emission of a pollutant per jday of fire for all burning pixels for that day
+    print(f'-> total emission of {pollutant} per day is= {total_emissions_per_day} tons!')
 
-    total_no_of_fires_list.append(no_of_fire)
+    total_burning_pixels_per_day_list.append(burning_pixels_per_day)
 
-    total_emission_annual_list.append(total_emission_per_day)
+    total_pol_emissions_per_day_list.append(total_emissions_per_day)
 
-    key_list.append(keys)
+    list_of_burning_days.append(jday_with_fire)
 
+#print(f'-> list of fire days is= {list_of_burning_days}')
+#print(f'-> list of pol emissions in fire days is= {total_pol_emissions_per_day_list}')
 #===========================================================
 # prepare lists for plotting
 
 # annual list of values
 # note: skipped the first index: jday=0
-#x_list = key_list #[1:]
-#y_list = total_no_of_fires_list #[1:]
-y_list_emission = total_emission_annual_list #[1:]
+#x_list = list_of_burning_days #[1:]
+#y_list = total_burning_pixels_per_day_list #[1:]
+#y_list = total_pol_emissions_per_day_list #[1:]
 
 # create a Df for 366 days with zero values, then fill each day/cell with appropriate value
 # first create zero lists for each plot axis
 jday_list = [jdays for jdays in range(0,367,1)]             # list of jdays from: 0-366
 
-no_of_fire_list = [fires_no*0 for fires_no in range(367)]   # list of zeros for all year
+burning_pixels_per_day_list = [fires_no*0 for fires_no in range(367)]   # list of zeros for all year
 
 emission_list = [emis*0 for emis in range(367)]
 
-# create a dict from the zero lists
-yr_dict = { 'jday': jday_list,
-           'no_of_fires': no_of_fire_list,
+# create a dict from the zero lists above
+df_col_dict = { 'jday': jday_list,
+           'burning_pixels_per_days': burning_pixels_per_day_list,
            'daily_emission': emission_list}
 
 # create a DF from dict
-yr_df = pd.DataFrame(yr_dict)
+year_df = pd.DataFrame(df_col_dict)
 
-#yr_df = pd.DataFrame( { 'jday':np.zeros(367),
-#                     'no_of_fires':np.zeros(367)} )  # example to create DF from np.zero method
+#year_df = pd.DataFrame( { 'jday':np.zeros(367),
+#                     'burning_pixels_per_days':np.zeros(367)} )  # example to create DF from np.zero method
 
 # fill / update zero cells in DF with daily values that are available
-for key_list_index in range(0,len(key_list),1): # keys = jdays with fire
+for list_index in range(0,len(list_of_burning_days),1): # keys = jdays with fire
 
-    #print('-> list"s cell index= %s' %(key_list_index) )
-    #print('-> list"s cell value= %s' %(key_list[key_list_index]) )
+    selected_jday_with_fire= list_of_burning_days[list_index]
 
-    key_list_value = key_list[key_list_index]
+    #print('-> list"s cell index= %s' %(list_index) )
+    #print('-> list"s cell value= %s' %(list_of_burning_days[list_index]) )
 
-    jday_ = key_list_value
-    # extract each day value from list
-    daily_total_fires = total_no_of_fires_list[key_list_index]      # keys = jdays with fire
+    # select each daily value from list based on its list index
+    daily_total_burning_pixels = total_burning_pixels_per_day_list[list_index]      # jday_with_fire = jdays with fire
 
-    daily_total_emit = total_emission_annual_list[key_list_index]
+    daily_total_emission = total_pol_emissions_per_day_list[list_index]
     # update DF
-    yr_df['no_of_fires'][jday_] = daily_total_fires  # update each DF"s column cell at each jday_ with available data, before it was zero
+    year_df['burning_pixels_per_days'][selected_jday_with_fire] = daily_total_burning_pixels  # update each DF"s column cell at each jday_ with available data, before it was zero
 
-    yr_df['daily_emission'][jday_] = daily_total_emit
+    year_df['daily_emission'][selected_jday_with_fire] = daily_total_emission
 
-
+print(f'-> dataframe is= {year_df}')
 
 # skip the first day with 0-index in the lists
-xx_ = list(yr_df['jday'])            #[1:]
+xx_ = list(year_df['jday'])            #[1:]
 
-yy_ = list(yr_df['no_of_fires'])     #[1:]
+yy_ = list(year_df['burning_pixels_per_days'])     #[1:]
 
-yy2_ = list(yr_df['daily_emission'])
+yy2_ = list(year_df['daily_emission'])
 
 x_ = xx_[1:]
 
@@ -217,7 +225,7 @@ if ( plot_format == 'seperate' ) :
     ax22.set_xlabel('month' , fontsize=fsize)
     ax22.spines['bottom'].set_position(('outward', 40))  # plot 2nd x-axis below the 1st axis
     #ax2.set_xlim(right=0.5)
-    plt.title('total daily emissions of %s from fires in LANDIS scenario %s, 2016' %(var_1,scenario_no) , fontsize=fsize)
+    plt.title('total daily emissions of %s from fires in LANDIS scenario %s, 2016' %(pol_col,scenario_no) , fontsize=fsize)
     #plt.subplots_adjust(hspace=.2)
     plt.tight_layout()
     #plt.show()
@@ -277,19 +285,21 @@ if ( plot_format == 'joined') :
 
     plt.title('frequency of fires in LANDIS scenario %s, 2016' %scenario_no , fontsize=fsize)
     ax1.set_ylabel('area (pixel) burned (10^4 m2)' , fontsize=fsize)
-    ax2.set_ylabel('total emissions (%s)' %pollutant_unit, fontsize=fsize)
+    ax2.set_ylabel(f'{pollutant} total emissions ({pollutant_unit})' , fontsize=fsize)
 
 
 
 #===========================================================
 # save the plot
 
-plot_name = 'no_of_fires_scen'+scenario_no+'.png'
+if (make_plot == 'yes') :
 
-plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
+    plot_name = 'burning_pixels_per_days_scen'+scenario_no+'.png'
 
-saved_plot = plot_dir+plot_name
-#extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-plt.savefig(saved_plot, dpi=1200 , format='png' )#, bbox_inches='tight')
+    plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
 
-print( f'-> plot saved at= {saved_plot}')
+    saved_plot = plot_dir+plot_name
+    #extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+    plt.savefig(saved_plot, dpi=1200 , format='png' )#, bbox_inches='tight')
+
+    print( f'-> plot saved at= {saved_plot}')
