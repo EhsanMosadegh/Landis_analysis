@@ -18,6 +18,7 @@ scenario_no = '4'
 fsize= 7  # font-size
 plot_format = 'joined'   # 'joined' OR 'seperate'
 make_plot = 'no'    # 'yes' or 'no'
+stats= 'yes'    # 'yes' or 'no'
 
 # select type of fire
 fire_type_index = 1 # 0-1
@@ -94,6 +95,7 @@ for jday_with_fire in jdays_with_fires_list:
 
 #print(f'-> list of fire days is= {list_of_burning_days}')
 #print(f'-> list of pol emissions in fire days is= {total_pol_emissions_per_day_list}')
+
 #===========================================================
 # prepare lists for plotting
 
@@ -139,8 +141,6 @@ for list_index in range(0,len(list_of_burning_days),1): # keys = jdays with fire
 
     year_df['daily_emission'][selected_jday_with_fire] = daily_total_emission
 
-print(f'-> dataframe is= {year_df}')
-
 # skip the first day with 0-index in the lists
 xx_ = list(year_df['jday'])            #[1:]
 
@@ -153,6 +153,51 @@ x_ = xx_[1:]
 y_ = yy_[1:]
 
 y2_ = yy2_[1:]
+
+# prepare lists for plotting
+#===========================================================
+# getting stats of Landis scenarios
+
+print(f'-> dataframe is= {year_df}')
+
+if (stats == 'yes') :
+
+    month_dict= {'jan': [1,31],
+                'feb': [32,60],
+                'mar': [61,91],
+                
+    }
+
+    month_list= [ *month_dict.keys() ]  # * makes a list of ...; or we can do: list( month_dict.keys() )
+
+    for month in month_list :
+    
+        print(f'-> month is= {month} ')
+
+        filtered_indexes= ( month_dict[month][0] <= year_df['jday'] ) &  ( year_df['jday'] <= month_dict[month][1] )
+
+        #print(f'-> filter is= {filtered_indexes}')
+
+        total_monthly_emnission= year_df['daily_emission'][ filtered_indexes ].sum()
+
+        print(f'-> total monthly emission of "{pollutant}" in "{month}" is= {total_monthly_emnission}')
+
+
+
+
+
+
+
+
+
+
+
+
+# getting stats of Landis scenarios
+#===========================================================
+
+
+
 
 #---
 # with plt method
