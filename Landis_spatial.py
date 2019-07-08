@@ -90,7 +90,7 @@ my_desired_base_map= Basemap(projection='lcc' ,\
 	height=NROWS_zoom , width=NCOLS_zoom ,\
 	resolution='f' , area_thresh=0.5) # 	urcrnrlon_list_of_fires=upper_right_lon_list_of_fires , urcrnrlon_list_of_fires=upper_right_lon_list_of_fires,\ , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires ,\
 
-my_desired_base_map.fillcontinents(color='#CCCCCC' , lake_color='lightblue' , zorder=1 )
+#my_desired_base_map.fillcontinents( lake_color='lightblue' , zorder=1 ) #color='#CCCCCC' , 
 #my_desired_base_map.bluemarble( zorder=1 )
 #my_desired_base_map.etopo( zorder=1 )
 #my_desired_base_map.shadedrelief( zorder=1 )
@@ -168,7 +168,7 @@ print( f'-> run time= { (( end - start ) / 60 ) :.2f} min' )  # f-string
 #===========================================================
 # show the plot
 
-plt.show() # save the plot and then show it.
+#plt.show() # save the plot and then show it.
 
 
 
