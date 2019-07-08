@@ -14,18 +14,18 @@ import matplotlib.pyplot as plt
 # controlling options:
 
 # select scenario number
-scenario_no = '5'
+scenario_no = '4'
 plot_format = 'joined'   # 'joined' OR 'seperate'
-make_plot = 'no'    # 'yes' or 'no'
+make_plot = 'yes'    # 'yes' or 'no'
 stats= 'yes'    # 'yes' or 'no'
 
 # select type of fire
-fire_type_index = 1 # 0-1
+fire_type_index = 1 # range= (0,1)
 fire_type = ['Flaming' ,  'Smoldering']
 fire = fire_type[fire_type_index]
 
 # select pollutant and units
-pollutant_index = 4 # 0-n
+pollutant_index = 0 # range= (0,n)
 pollutant_name_list = ['PM2.5' , 'PM10' , 'NOX' , 'NH3' , 'CO' , 'CO2']
 pollutant_unit_list = ['tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day']
 pollutant = pollutant_name_list[pollutant_index] # index should be integer
@@ -38,12 +38,11 @@ scenario_year = 30
 grouping_param = 'FireDay-30'
 pol_col = pollutant+'-'+fire+'-'+str(scenario_year) # all string
 
-print(f'-> scenario is= {scenario_no}')
 print(f'-> make plot is= {make_plot}')
-print(f'-> temporal plotting of Landis scenario= {scenario_no} ...')
+print(f'-> Landis scenario is= {scenario_no} ')
 print(f'-> pollutant= {pollutant}')
 print(f'-> grouping parameter is= {grouping_param}')
-print('-> variable 2 = %s'  %(pol_col) )
+print(f'-> plotting for= {pol_col} ')
 
 #===========================================================
 # define the input file
@@ -82,10 +81,10 @@ for jday_with_fire in jdays_with_fires_list:
     #print(type(filtered_key_group))
 
     burning_pixels_per_day = filtered_key_group['pointid'].count() # count the number fo fires per each group/day. 'pointid' no. is unique for each fire.
-    print(f'-> noumber of burned pixels for jday {jday_with_fire} are= {burning_pixels_per_day}')
+    #print(f'-> noumber of burned pixels for jday {jday_with_fire} are= {burning_pixels_per_day}')
 
     total_emissions_per_day = filtered_key_group[pol_col].sum() # sum total emission of a pollutant per jday of fire for all burning pixels for that day
-    print(f'-> total emission of {pollutant} per day is= {total_emissions_per_day} tons!')
+    #print(f'-> total emission of {pollutant} per day is= {total_emissions_per_day} tons!')
 
     total_burning_pixels_per_day_list.append(burning_pixels_per_day)
 
@@ -158,7 +157,7 @@ y2_ = yy2_[1:]
 #===========================================================
 # getting stats of Landis scenarios
 
-print(f'-> dataframe is= {year_df}')
+#print(f'-> dataframe is= {year_df}')
 
 if (stats == 'yes') :
 
@@ -288,8 +287,8 @@ if ( plot_format == 'seperate' ) :
 if ( plot_format == 'joined') :
 
     fig = plt.Figure()
-    ax1 = plt.subplot(2,1,2) # (row,col,index) draw 1st axis at bottom
-    ax2 = plt.subplot(2,1,1 , sharex=ax1 ) # the next axis on top of 1st, share ax1 properties
+    ax1 = plt.subplot(2,1,2) # burning pixels, the bottom plot, (row,col,index) draw 1st axis at bottom
+    ax2 = plt.subplot(2,1,1 , sharex=ax1 ) # total daily emissions, the top one, the next axis on top of 1st, share ax1 properties
 
     #ax1.get_shared_x_axes().join(ax1, ax2) # when each axis is created seperately, and then we want to join them afterwards
 
@@ -300,10 +299,10 @@ if ( plot_format == 'joined') :
     ax1.set_xticklabels( ax1_xtick_labels ) #, fontsize=8 )
 
     # set limits for both axes
-    ax1.set_xlim( xmin=0, xmax=366 )  # to start the plot from zero-zero
+    ax1.set_xlim( xmin=0, xmax=366 )  # to start the plot from zero-zero , bottom plot, pixels
     ax1.set_ylim( ymin=0, ymax=500 )
    # ax2.set_xlim( xmin=0, xmax=366 )
-    ax2.set_ylim( ymin=0, ymax=500 )
+    ax2.set_ylim( ymin=0, ymax=550 )   # top plot, emissions
 
    # plt.setp( ax2.get_xticklabels(), visible=False) turns off ax2 x-labels
 
@@ -330,7 +329,7 @@ if ( plot_format == 'joined') :
 
 if (make_plot == 'yes') :
 
-    plot_name = 'burning_pixels_per_days_scen'+scenario_no+'.png'
+    plot_name = 'Landis_temporal_daily_burnedPixels_and_totalEmissions_'+pollutant+'_scen'+scenario_no+'.png'
 
     plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
 
@@ -338,4 +337,5 @@ if (make_plot == 'yes') :
     #extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
     plt.savefig(saved_plot, dpi=1200 , format='png' )#, bbox_inches='tight')
 
-    print( f'-> plot saved at= {saved_plot}')
+    print( f'-> plot saved at=')
+    print(saved_plot)
