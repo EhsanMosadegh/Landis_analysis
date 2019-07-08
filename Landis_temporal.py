@@ -14,8 +14,7 @@ import matplotlib.pyplot as plt
 # controlling options:
 
 # select scenario number
-scenario_no = '4'
-fsize= 7  # font-size
+scenario_no = '5'
 plot_format = 'joined'   # 'joined' OR 'seperate'
 make_plot = 'no'    # 'yes' or 'no'
 stats= 'yes'    # 'yes' or 'no'
@@ -34,6 +33,7 @@ pollutant_unit = pollutant_unit_list[pollutant_index]
 
 
 # other settinggs
+fsize= 7  # font-size
 scenario_year = 30
 grouping_param = 'FireDay-30'
 pol_col = pollutant+'-'+fire+'-'+str(scenario_year) # all string
@@ -173,15 +173,14 @@ if (stats == 'yes') :
                 'sep': [245,274],
                 'oct': [275,305],
                 'nov': [305,335],
-                'dec': [336,366]
-
-    }
+                'dec': [336,366] }
 
     month_list= [ *month_dict.keys() ]  # * makes a list of ...; or we can do: list( month_dict.keys() )
 
+    print(f'-> scenario is= {scenario_no}')
+    #print(f'-> month is= {month} ')
+
     for month in month_list :
-    
-        print(f'-> month is= {month} ')
 
         filtered_indexes= ( month_dict[month][0] <= year_df['jday'] ) &  ( year_df['jday'] <= month_dict[month][1] )
 
@@ -189,24 +188,10 @@ if (stats == 'yes') :
 
         total_monthly_emnission= year_df['daily_emission'][ filtered_indexes ].sum()
 
-        print(f'-> total monthly emission of "{pollutant}" in "{month}" is= {total_monthly_emnission}')
-
-
-
-
-
-
-
-
-
-
-
+        print(f'-> total monthly emission of "{pollutant}" in "{month}" is= {total_monthly_emnission} tons!')
 
 # getting stats of Landis scenarios
 #===========================================================
-
-
-
 
 #---
 # with plt method
@@ -283,9 +268,6 @@ if ( plot_format == 'seperate' ) :
     #plt.subplots_adjust(hspace=.2)
     plt.tight_layout()
     #plt.show()
-
-
-
 
 #---
 # some other method
