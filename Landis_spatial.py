@@ -22,10 +22,12 @@ start = time.time()
 # controlling options:
 
 # select scenario number
-scenario_no = '1'
+scenario_no = '5'
 # fsize=9  # font-size
 month_list = [ 'jul' , 'aug' , 'sep' , 'oct' , 'nov']
-
+# set the resolution of spatial plot
+spatial_res= 'l' # 'l' , 'i' , 'f'
+plot_format='pdf'  # 'png' 'svg'
 # other settinggs
 scenario_year = 30
 
@@ -41,7 +43,7 @@ input_file_full_path = input_file_path + input_file_name
 #===========================================================
 # read-in data
 
-print(f'-> reading input file for scenario= {scenario_no}...')
+print(f'-> reading input file for scenario= {scenario_no}')
 
 input_df = pd.read_csv( input_file_full_path , sep=',' , header=0 )#, names= ColumnList)# ,  index_listcol=0 ) why index_listcol does not work?
 
@@ -88,9 +90,9 @@ print('-> making the map now ...')
 my_desired_base_map= Basemap(projection='lcc' ,\
 	lat_0=lat_desired_cent , lon_0=lon_desired_cent ,\
 	height=NROWS_zoom , width=NCOLS_zoom ,\
-	resolution='f' , area_thresh=0.5) # 	urcrnrlon_list_of_fires=upper_right_lon_list_of_fires , urcrnrlon_list_of_fires=upper_right_lon_list_of_fires,\ , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires ,\
+	resolution=spatial_res , area_thresh=0.5) # 	urcrnrlon_list_of_fires=upper_right_lon_list_of_fires , urcrnrlon_list_of_fires=upper_right_lon_list_of_fires,\ , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires ,\
 
-#my_desired_base_map.fillcontinents( lake_color='lightblue' , zorder=1 ) #color='#CCCCCC' , 
+my_desired_base_map.fillcontinents( color='#CCCCCC' , lake_color='lightblue' , zorder=1 ) # , 
 #my_desired_base_map.bluemarble( zorder=1 )
 #my_desired_base_map.etopo( zorder=1 )
 #my_desired_base_map.shadedrelief( zorder=1 )
@@ -141,23 +143,26 @@ for month in month_list :
 
 #my_desired_base_map.etopo(scale=0.5, alpha=0.5)  # the map backgroud 
 #my_desired_base_map.shadedrelief(scale=0.5)
-plt.legend( scatterpoints=1 , frameon=True , title= 'number of fires' )
+plt.legend( scatterpoints=1 , frameon=True , title= 'number of fires' , loc='center left', bbox_to_anchor=(1, 0.5) ,
+          fancybox=True )
 
-plt.title(f'Spatial distribution of fires - LANDIS scen {scenario_no}')
+plt.title(f'Spatial distribution of fires in LANDIS scenario {scenario_no}' , fontsize=10 )
 
 #===========================================================
 # save the plot
 
-plot_name = 'spatial_distribution_of_fires_scen'+scenario_no+'.png'
+plot_name = 'spatial_distribution_of_fires_scen'+scenario_no+'.'+plot_format
 
 plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
 
 saved_plot = plot_dir+plot_name
 #extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-plt.savefig(saved_plot , dpi=1200 , format='png' ) #, bbox_inches='tight')
+plt.savefig(saved_plot , dpi=1200 , format=plot_format ) #, bbox_inches='tight')
 
 print(" ")
-print(f'-> plot saved at= {saved_plot}')
+print(f'-> plot saved at=')
+print(saved_plot)
+#plt.show()
 #===========================================================
 # calculon_list_of_firese run time
 
