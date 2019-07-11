@@ -21,6 +21,7 @@ start = time.time()
 #===========================================================
 # controlling options:
 
+save_plot= 'no'  # 'yes' or 'no'
 # select scenario number
 scenario_no = '5'
 # fsize=9  # font-size
@@ -31,12 +32,13 @@ plot_format='pdf'  # 'png' 'svg'
 # other settinggs
 scenario_year = 30
 
+print(f'-> save plot is= {save_plot} ')
 #===========================================================
 # define the input file
 
 input_file_name = 'Scenario_'+scenario_no+'_year_30_latlon.csv' 
 
-input_file_path = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/' # '/' at the end of the path
+input_file_path = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/landis_input_files_latlon_converted/' # '/' at the end of the path
 
 input_file_full_path = input_file_path + input_file_name
 
@@ -150,30 +152,33 @@ plt.title(f'Spatial distribution of fires in LANDIS scenario {scenario_no}' , fo
 
 #===========================================================
 # save the plot
+if (save_plot=='yes'):
 
-plot_name = 'spatial_distribution_of_fires_scen'+scenario_no+'.'+plot_format
+	plot_name = 'spatial_distribution_of_fires_scen'+scenario_no+'.'+plot_format
 
-plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
+	plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
 
-saved_plot = plot_dir+plot_name
-#extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-plt.savefig(saved_plot , dpi=1200 , format=plot_format ) #, bbox_inches='tight')
+	saved_plot = plot_dir+plot_name
+	#extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+	plt.savefig(saved_plot , dpi=1200 , format=plot_format ) #, bbox_inches='tight')
 
-print(" ")
-print(f'-> plot saved at=')
-print(saved_plot)
-#plt.show()
-#===========================================================
-# calculon_list_of_firese run time
+	print(" ")
+	print(f'-> plot saved at=')
+	print(saved_plot)
+	#plt.show()
+	#===========================================================
+	# calculon_list_of_firese run time
 
-end = time.time()
+	end = time.time()
 
-print( f'-> run time= { (( end - start ) / 60 ) :.2f} min' )  # f-string
+	print( f'-> run time= { (( end - start ) / 60 ) :.2f} min' )  # f-string
 
-#===========================================================
+	#===========================================================
 # show the plot
-
-#plt.show() # save the plot and then show it.
+else:
+	print(" ")
+	print(f'-> save plot is NO! so we only show it here.')
+	plt.show() # save the plot and then show it.
 
 
 
