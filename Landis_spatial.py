@@ -21,6 +21,9 @@ start = time.time()
 #===========================================================
 # controlling options:
 
+# select the domain
+my_domain= 'cmaq_domain' # 'zoomed_domain' or 'cmaq_domain' 
+# save the plot or not?
 save_plot= 'no'  # 'yes' or 'no'
 # select scenario number
 scenario_no = '5'
@@ -33,6 +36,7 @@ plot_format='pdf'  # 'png' 'svg'
 scenario_year = 30
 
 print(f'-> save plot is= {save_plot} ')
+print(f'-> plot domain is set to= {my_domain}')
 #===========================================================
 # define the input file
 
@@ -59,9 +63,9 @@ input_df_nonZero_days = input_df[ filter_nonZero_days ]
 #===========================================================
 # Basemap plot setting to zoom
 
-### center of domain
-# xcent =-120.806 # degrees
-# ycent =40.0 # degrees
+### center of CMAQ domain
+xcent_cmaq =-120.806 # degrees
+ycent_cmaq =40.0 # degrees
 
 # center of my desired map== I like to set Lake Tahoe at the center
 lon_desired_cent =-120.0323507 # center of the map; degrees
@@ -71,7 +75,11 @@ lat_desired_cent =39.02 # center of the map; degrees
 # lower_left_lon_list_of_fires=-122.0 # lower-left corner of the map; degrees, -120.1407
 # lower_left_lon_list_of_fires=20.0# lower-left corner of the map; degrees, 37.60086 
 
-### domain size
+### domain size  for zoomed map
+NROWS = 500*1000 # height of the map; meters
+NCOLS = 500*1000 #
+
+### domain size  for zoomed map
 NROWS_zoom = 70000 # height of the map; meters
 NCOLS_zoom = 65000 # width of the map; meters
 
@@ -80,22 +88,35 @@ NCOLS_zoom = 65000 # width of the map; meters
 # upper_right_lon_list_of_fires=40 # meters
 print(" ")
 print('-> making the map now ...')
-# # draw the map background
+
+# draw the map background --> map of whole domain
 # my_desired_base_map= Basemap(projection='lcc' ,\
 # 	llcrnrx=lower_left_lon_list_of_fires , llcrnry=lower_left_lon_list_of_fires ,\
 # 	lon_list_of_fires_0=lon_list_of_fires_desired_cent , lon_list_of_fires_0=lon_list_of_fires_desired_cent ,\
 # 	height=NROWS_zoom , width=NCOLS_zoom ,\
 # 	 resolution='l' , area_thresh=0.5) # urcrnrx=upper_right_lon_list_of_fires , urcrnry=upper_right_lon_list_of_fires
 
-# first, we plot a desired base-map, adn then we plot our data on this map
-# new version of my map
-my_desired_base_map= Basemap(projection='lcc' ,\
-	lat_0=lat_desired_cent , lon_0=lon_desired_cent ,\
-	height=NROWS_zoom , width=NCOLS_zoom ,\
-	resolution=spatial_res , area_thresh=0.5) # 	urcrnrlon_list_of_fires=upper_right_lon_list_of_fires , urcrnrlon_list_of_fires=upper_right_lon_list_of_fires,\ , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires ,\
+
+# first, we plot a desired base-map, and then we plot our data on this map
+if (my_domain=='cmaq_domain'):
+	print(f'-> domain is= {my_domain}')
+
+	my_desired_base_map= Basemap(projection='lcc' ,\
+		lat_0=ycent_cmaq , lon_0=xcent_cmaq ,\
+		height=NROWS , width=NCOLS ,\
+		resolution=spatial_res , area_thresh=0.5)
+
+# new version of my map --> zoomed map
+if(my_domain=='zoomed_domain'):
+	print(f'-> domain is= {my_domain}')
+
+	my_desired_base_map= Basemap(projection='lcc' ,\
+		lat_0=lat_desired_cent , lon_0=lon_desired_cent ,\
+		height=NROWS_zoom , width=NCOLS_zoom ,\
+		resolution=spatial_res , area_thresh=0.5) # 	urcrnrlon_list_of_fires=upper_right_lon_list_of_fires , urcrnrlon_list_of_fires=upper_right_lon_list_of_fires,\ , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires , llcrnrlon_list_of_fires=lower_left_lon_list_of_fires ,\
 
 my_desired_base_map.fillcontinents( color='#CCCCCC' , lake_color='lightblue' , zorder=1 ) # , 
-#my_desired_base_map.bluemarble( zorder=1 )
+my_desired_base_map.bluemarble( zorder=1 )
 #my_desired_base_map.etopo( zorder=1 )
 #my_desired_base_map.shadedrelief( zorder=1 )
 
