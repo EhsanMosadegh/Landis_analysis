@@ -161,7 +161,7 @@ y2_ = yy2_[1:]
 
 if (stats == 'yes') :
 
-    month_dict= {'jan': [1,31],
+    month_dict = {'jan': [1,31],
                 'feb': [32,60],
                 'mar': [61,91],
                 'apr': [92,121],
@@ -174,7 +174,7 @@ if (stats == 'yes') :
                 'nov': [305,335],
                 'dec': [336,366] }
 
-    month_list= [ *month_dict.keys() ]  # * makes a list of ...; or we can do: list( month_dict.keys() )
+    month_list = [ *month_dict.keys() ]  # * makes a list of ...; or we can do: list( month_dict.keys() )
 
     print(f'-> scenario is= {scenario_no}')
     #print(f'-> month is= {month} ')

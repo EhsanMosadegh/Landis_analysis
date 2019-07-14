@@ -30,7 +30,7 @@ plot_format='png'  # 'png' 'svg'
 # select the domain
 my_domain= 'zoomed_domain' # 'zoomed_domain' or 'cmaq_domain'
 # save the plot or not?
-save_plot= 'yes'  # 'yes' or 'no'
+save_plot= 'no'  # 'yes' or 'no'
 # select scenario number
 scenario_no = '5'
 # fsize=9  # font-size
@@ -46,23 +46,23 @@ mesh_type='region_for_stats' # 'sample_mesh' or 'modeling_domain' or 'station_in
 
 zoomed_domain_zoomOut_scale_factor=10
 cmaq_domain_zoomOut_scale_factor=1
-mesh_domain_range=15
+mesh_domain_range= 47
 
 ### set the station location
-stn_lon=-119.9772
-stn_lat=38.9399
+stn_lon=-120
+stn_lat=39
 
 ### for a locatio
 marker_lon=stn_lon		#-120.0324
 marker_lat=stn_lat		#39.0968
 
 ### for statistics mesh
-stats_mesh_ll_lon=-120.1
-stats_mesh_ll_lat=38.83
+stats_mesh_ll_lon= -120.25
+stats_mesh_ll_lat= 38.87
 
 ### center of CMAQ domain
-xcent_cmaq=-120.806 # degrees, ref_lon from WPS namelist
-ycent_cmaq=38.45 # degrees, ref_lat from WPS namelist
+xcent_cmaq=-120.806 					# degrees, ref_lon from WPS namelist
+ycent_cmaq=38.45 							# degrees, ref_lat from WPS namelist
 
 ### center of my desired map== I like to set Lake Tahoe at the center
 lon_of_desired_center=marker_lon		# center of the map; degrees
@@ -332,7 +332,7 @@ if ( spatial_plot_type=='mesh' ) :
 		print(f'-> now plot the mesh from the starting cell= {marker_row , marker_col} ')
 
 		for row in range( marker_row , marker_row+mesh_domain_range , 1 ) :
-			for column in range( marker_col , marker_col+mesh_domain_range , 1) :
+			for column in range( marker_col , marker_col+mesh_domain_range , 1 ) :
 
 				#print(f'-> for row= {row} and col= {column}')
 				desired_underlying_map.plot( lon_cross_arr[row , column] , lat_cross_arr[row , column] , marker='.' , color='b' , latlon=True )
