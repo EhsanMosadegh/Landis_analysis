@@ -30,7 +30,7 @@ plot_format='png'  # 'png' 'svg'
 # select the domain
 my_domain= 'zoomed_domain' # 'zoomed_domain' or 'cmaq_domain'
 # save the plot or not?
-save_plot= 'no'  # 'yes' or 'no'
+save_plot= 'yes'  # 'yes' or 'no'
 # select scenario number
 scenario_no = '5'
 # fsize=9  # font-size
@@ -39,30 +39,30 @@ month_list = [ 'jul' , 'aug' , 'sep' , 'oct' , 'nov']
 # define what type of spatial plot
 spatial_plot_type='mesh' # 'fires' or 'marker' or 'mesh'
 
-mesh_type='region_for_stats' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'region_for_stats'
+mesh_type='sample_plot_of_study_region' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'stats_region' or 'sample_plot_of_study_region'
 
 #===========================================================
 # Basemap plot setting
 
 zoomed_domain_zoomOut_scale_factor=10
 cmaq_domain_zoomOut_scale_factor=1
-mesh_domain_range= 47
+mesh_domain_range= 50
 
 ### set the station location
-stn_lon=-120
-stn_lat=39
+stn_lon= -120
+stn_lat= 39
 
 ### for a locatio
 marker_lon=stn_lon		#-120.0324
 marker_lat=stn_lat		#39.0968
 
 ### for statistics mesh
-stats_mesh_ll_lon= -120.25
-stats_mesh_ll_lat= 38.87
+stats_region_ll_lon= -120.30 #-120.25
+stats_region_ll_lat= 38.87 #38.87
 
 ### center of CMAQ domain
-xcent_cmaq=-120.806 					# degrees, ref_lon from WPS namelist
-ycent_cmaq=38.45 							# degrees, ref_lat from WPS namelist
+xcent_cmaq= -120.806 					# degrees, ref_lon from WPS namelist
+ycent_cmaq= 38.45 							# degrees, ref_lat from WPS namelist
 
 ### center of my desired map== I like to set Lake Tahoe at the center
 lon_of_desired_center=marker_lon		# center of the map; degrees
@@ -150,15 +150,16 @@ if(my_domain=='zoomed_domain'):
 
 ### set the background type of the basemap with zorder=1
 desired_underlying_map.fillcontinents( color='#CCCCCC' , lake_color='lightblue' , zorder=1 ) # ,
-#desired_underlying_map.bluemarble( zorder=1 )
-#desired_underlying_map.etopo( zorder=1 )
-#desired_underlying_map.shadedrelief( zorder=1 )
+#desired_underlying_map.bluemarble( scale=4 , zorder=1 )
+#desired_underlying_map.etopo( scale=2, alpha=0.5, zorder=1 )
+#desired_underlying_map.shadedrelief( scale=2 , zorder=1 )
 
 ### draw other map characteristics
 desired_underlying_map.drawmapboundary(color='k' )#, fill_color='#46bcec' ) #, fill_color='aqua')
-desired_underlying_map.drawcoastlines(color = '0.15' , zorder=2 )
+desired_underlying_map.drawcoastlines(color = 'black' , zorder=2 )
 desired_underlying_map.drawcounties(linewidth=0.5 , color='k' , zorder=3 )
 desired_underlying_map.drawstates(zorder=4 )
+#desired_underlying_map.drawrivers(zorder=5)
 
 
 print(" ")
@@ -312,10 +313,10 @@ if ( spatial_plot_type=='mesh' ) :
 		desired_underlying_map.plot( stn_cell_lon_list , stn_cell_lat_list , color='r' , latlon=True , zorder=5 )
 
 
-	if ( mesh_type=='region_for_stats' ) :
+	if ( mesh_type=='stats_region' ) :
 
-		lon_diff_arr=lon_cross_arr-stats_mesh_ll_lon
-		lat_diff_arr=lat_cross_arr-stats_mesh_ll_lat
+		lon_diff_arr=lon_cross_arr-stats_region_ll_lon
+		lat_diff_arr=lat_cross_arr-stats_region_ll_lat
 
 		#print(f'-> type of {lon_diff_arr} is= {type(lon_diff_arr)} ')
 
@@ -331,19 +332,29 @@ if ( spatial_plot_type=='mesh' ) :
 		print(f'-> cell row is= {marker_col}')
 		print(f'-> now plot the mesh from the starting cell= {marker_row , marker_col} ')
 
-		for row in range( marker_row , marker_row+mesh_domain_range , 1 ) :
-			for column in range( marker_col , marker_col+mesh_domain_range , 1 ) :
+		for row in range( marker_row , marker_row + mesh_domain_range , 1 ) :
+			for column in range( marker_col , marker_col + mesh_domain_range , 1 ) :
 
 				#print(f'-> for row= {row} and col= {column}')
-				desired_underlying_map.plot( lon_cross_arr[row , column] , lat_cross_arr[row , column] , marker='.' , color='b' , latlon=True )
+				desired_underlying_map.plot( lon_cross_arr[row , column] , lat_cross_arr[row , column] , marker='.' , color='grey' , latlon=True )
 
 
+	if ( mesh_type == 'sample_plot_of_study_region') :
 
+		### order is= ll,ul,ur,lr,and again ll
+		LTB_lon_list=[ -120.30 , -120.30 , -119.83 , -119.83 , -120.30 ] 
+		LTB_lat_list=[ 38.87 , 39.30 , 39.30 , 38.87 , 38.87 ]
 
+		southLakeTahoe_lon_list=[ -120.05 , -120.05 , -119.95 , -119.95 , -120.05 ]
+		southLakeTahoe_lat_list=[ 38.88 , 38.95 , 38.95 , 38.88 , 38.88 ]
 
+		desired_underlying_map.plot( LTB_lon_list , LTB_lat_list , latlon=True , zorder=5 )
+		x,y=desired_underlying_map(-119.82 , 39.3)
+		plt.text( x , y , 'LTB' , fontsize=8 , color='r')
 
-
-
+		desired_underlying_map.plot( southLakeTahoe_lon_list , southLakeTahoe_lat_list , latlon=True , zorder=5 )
+		x,y=desired_underlying_map(-119.95 , 38.92)
+		plt.text( x , y , 'SouthLakeTahoe' , fontsize=8 , color='r')
 
 	plot_name = 'plot_for_'+spatial_plot_type+'_'+mesh_type+'.'+plot_format
 
@@ -374,6 +385,3 @@ else:
 	print(" ")
 	print(f'-> save plot is= NO! so we only show it here.')
 	plt.show() # save the plot and then show it.
-
-
-
