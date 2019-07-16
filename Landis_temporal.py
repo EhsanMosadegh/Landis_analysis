@@ -4,7 +4,7 @@
 # usage: to analyze LANDIS dataset, temporal analysis
 # date: May 10, 2019
 # email: ehsan.mosadegh@gmail.com, ehsanm@dri.edu
-# notes:
+# notes: to 
 ############################################################
 
 import pandas as pd
@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 # controlling options:
 
 # select scenario number
-scenario_no = '4'
+scenario_no = '1'
 plot_format = 'joined'   # 'joined' OR 'seperate'
-make_plot = 'yes'    # 'yes' or 'no'
+make_plot = 'no'    # 'yes' or 'no'
 stats= 'yes'    # 'yes' or 'no'
 
 # select type of fire
@@ -25,8 +25,8 @@ fire_type = ['Flaming' ,  'Smoldering']
 fire = fire_type[fire_type_index]
 
 # select pollutant and units
-pollutant_index = 0 # range= (0,n)
-pollutant_name_list = ['PM2.5' , 'PM10' , 'NOX' , 'NH3' , 'CO' , 'CO2']
+pollutant_index = 4 # range= (0,n)
+pollutant_name_list = ['PM2.5' ,    'PM10' ,        'NOX' ,     'NH3' ,     'CO' ,      'CO2']
 pollutant_unit_list = ['tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day']
 pollutant = pollutant_name_list[pollutant_index] # index should be integer
 pollutant_unit = pollutant_unit_list[pollutant_index]
@@ -38,18 +38,19 @@ scenario_year = 30
 grouping_param = 'FireDay-30'
 pol_col = pollutant+'-'+fire+'-'+str(scenario_year) # all string
 
-print(f'-> make plot is= {make_plot}')
 print(f'-> Landis scenario is= {scenario_no} ')
 print(f'-> pollutant= {pollutant}')
 print(f'-> grouping parameter is= {grouping_param}')
-print(f'-> plotting for= {pol_col} ')
+print(f'-> type of fire is= {fire}')
+print(f'-> processing/plotting for= {pol_col} ')
+print(f'-> make plot is= {make_plot}')
 
 #===========================================================
 # define the input file
 
-input_file_name = 'Scenario_'+scenario_no+'_year_30_latlon.csv'
+input_file_name = 'Scenario_'+scenario_no+'_year_30.csv'
 
-input_file_path = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/' # '/' at the end of the path
+input_file_path = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/landis_input_files_original_latlon/' # '/' at the end of the path
 
 input_file_full_path = input_file_path + input_file_name
 
@@ -77,6 +78,13 @@ list_of_burning_days= []
 # for each group we extract no. of fires per each day, keys are days with fires
 for jday_with_fire in jdays_with_fires_list:
 
+    #print( f'-> loop for jday= {jday_with_fire} ')
+    # if ( jday_with_fire == 0 ) :
+    #     print( '-> we exclude jday_with_fire= ' , jday_with_fire )
+    #     continue
+
+    #print( f'-> processing jday= {jday_with_fire} ')
+
     filtered_key_group = grouped_data.get_group(jday_with_fire)  # filter dataset for each day with fire, by its key and get a group by its 'key'
     #print(type(filtered_key_group))
 
@@ -92,8 +100,8 @@ for jday_with_fire in jdays_with_fires_list:
 
     list_of_burning_days.append(jday_with_fire)
 
-#print(f'-> list of fire days is= {list_of_burning_days}')
-#print(f'-> list of pol emissions in fire days is= {total_pol_emissions_per_day_list}')
+print(f'-> list of Julian days with fire is= {list_of_burning_days}')
+print(f'-> list of pol emissions in fire days is= {total_pol_emissions_per_day_list}')
 
 #===========================================================
 # prepare lists for plotting
@@ -104,7 +112,7 @@ for jday_with_fire in jdays_with_fires_list:
 #y_list = total_burning_pixels_per_day_list #[1:]
 #y_list = total_pol_emissions_per_day_list #[1:]
 
-# create a Df for 366 days with zero values, then fill each day/cell with appropriate value
+# create a DataFrame for 366 days with zero values, then fill each day/cell with appropriate value
 # first create zero lists for each plot axis
 jday_list = [jdays for jdays in range(0,367,1)]             # list of jdays from: 0-366
 
@@ -113,9 +121,9 @@ burning_pixels_per_day_list = [fires_no*0 for fires_no in range(367)]   # list o
 emission_list = [emis*0 for emis in range(367)]
 
 # create a dict from the zero lists above
-df_col_dict = { 'jday': jday_list,
-           'burning_pixels_per_days': burning_pixels_per_day_list,
-           'daily_emission': emission_list}
+df_col_dict = { 'jday':                     jday_list ,
+                'burning_pixels_per_days':  burning_pixels_per_day_list ,
+                'daily_emission':           emission_list }
 
 # create a DF from dict
 year_df = pd.DataFrame(df_col_dict)
@@ -161,33 +169,45 @@ y2_ = yy2_[1:]
 
 if (stats == 'yes') :
 
-    month_dict = {'jan': [1,31],
-                'feb': [32,60],
-                'mar': [61,91],
-                'apr': [92,121],
-                'may': [122,152],
-                'jun': [153,182],
-                'jul': [183,213],
-                'aug': [214,244],
-                'sep': [245,274],
-                'oct': [275,305],
-                'nov': [305,335],
-                'dec': [336,366] }
+    month_dict = {  'jan': [1,31],
+                    'feb': [32,60],
+                    'mar': [61,91],
+                    'apr': [92,121],
+                    'may': [122,152],
+                    'jun': [153,182],
+                    'jul': [183,213],
+                    'aug': [214,244],
+                    'sep': [245,274],
+                    'oct': [275,305],
+                    'nov': [305,335],
+                    'dec': [336,366]    }
 
     month_list = [ *month_dict.keys() ]  # * makes a list of ...; or we can do: list( month_dict.keys() )
-
+    print(" ")
     print(f'-> scenario is= {scenario_no}')
     #print(f'-> month is= {month} ')
+    print(" ")
+
+    total_annual_list=[]
 
     for month in month_list :
 
-        filtered_indexes= ( month_dict[month][0] <= year_df['jday'] ) &  ( year_df['jday'] <= month_dict[month][1] )
+        lower_band= month_dict[month][0] 
+        upper_band= month_dict[month][1]
+        
+        #print('lower limit and upper limit for the range is= %s --> %s' %(lower_band , upper_band))
+
+        filtered_indexes= ( lower_band <= year_df['jday'] ) &  ( year_df['jday'] <= upper_band )
 
         #print(f'-> filter is= {filtered_indexes}')
 
         total_monthly_emnission= year_df['daily_emission'][ filtered_indexes ].sum()
 
         print(f'-> total monthly emission of "{pollutant}" in "{month}" is= {total_monthly_emnission} tons!')
+        total_annual_list.append( total_monthly_emnission )
+
+    print(" ")
+    print(f'-> sum of annual emissions for ({pollutant}) from ({fire}) is= {sum(total_annual_list)} tons! ')
 
 # getting stats of Landis scenarios
 #===========================================================
