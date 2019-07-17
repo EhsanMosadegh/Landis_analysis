@@ -33,7 +33,7 @@ my_domain= 'zoomed_domain' # 'zoomed_domain' or 'cmaq_domain'
 # save the plot or not?
 save_plot= 'no'  # 'yes' or 'no'
 # select scenario number
-scenario_no = '3'
+scenario_no = '1'
 # fsize=9  # font-size
 month_list = [ 'jul' , 'aug' , 'sep' , 'oct' , 'nov']
 
