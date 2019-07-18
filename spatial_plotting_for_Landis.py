@@ -33,7 +33,7 @@ my_domain= 'zoomed_domain' # 'zoomed_domain' or 'cmaq_domain'
 # save the plot or not?
 save_plot= 'yes'  # 'yes' or 'no'
 # select scenario number
-scenario_no = '5'
+scenario_no = '1'
 # fsize=9  # font-size
 month_list = [ 'jul' , 'aug' , 'sep' , 'oct' , 'nov']
 
@@ -288,7 +288,7 @@ if ( spatial_plot_type == 'fires' ) :
 
 				saved_plot = plot_dir+plot_name
 				#extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-				plt.savefig(saved_plot , dpi=300 , format=plot_format ) #, bbox_inches='tight')
+				plt.savefig(saved_plot , dpi=dpi_res , format=plot_format ) #, bbox_inches='tight')
 
 				print(" ")
 				print(f'-> final plot saved at=')

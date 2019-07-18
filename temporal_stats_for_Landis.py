@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # controlling options:
 
 # select scenario number
-scenario_no = '1'
+scenario_no = '5'
 plot_format = 'joined'   # 'joined' OR 'seperate'
 make_plot = 'no'    # 'yes' or 'no'
 stats= 'yes'    # 'yes' or 'no'
@@ -24,12 +24,12 @@ dpi_size= 300
 fig_format= '.png'
 
 # select type of fire
-fire_type_index = 1 # range= (0,1)
+fire_type_index = 0 # range= (0,1)
 fire_type = ['Flaming' ,  'Smoldering']
 fire = fire_type[fire_type_index]
 
 # select pollutant and units
-pollutant_index = 4 # range= (0,n)
+pollutant_index = 0 # range= (0,n)
 pollutant_name_list = ['PM2.5' ,    'PM10' ,        'NOX' ,     'NH3' ,     'CO' ,      'CO2']
 pollutant_unit_list = ['tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day' , 'tons/day']
 pollutant = pollutant_name_list[pollutant_index] # index should be integer
@@ -52,9 +52,9 @@ print(f'-> make plot is= {make_plot}')
 #===========================================================
 # define the input file
 
-input_file_name = 'Scenario_'+scenario_no+'_year_30.csv'
+input_file_name = 'Scenario_'+scenario_no+'_year_30_latlon.csv'
 
-input_file_path = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/landis_input_files_original_latlon/' # '/' at the end of the path
+input_file_path = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/landis_input_files_latlon_converted/' # '/' at the end of the path
 
 input_file_full_path = input_file_path + input_file_name
 
@@ -93,8 +93,8 @@ for jday_iter in list_of_all_jdays :
 
     list_of_burning_days.append( jday_iter)
 
-print(f'-> list of Julian days with fire --> len= {len(list_of_burning_days)}; and the list= {list_of_burning_days} ')
-print(f'-> list of pol emissions in fire days --> len={len(total_pol_emissions_per_day_list)}; and the list= {total_pol_emissions_per_day_list}')
+#print(f'-> list of Julian days with fire --> len= {len(list_of_burning_days)}; and the list= {list_of_burning_days} ')
+#print(f'-> list of pol emissions in fire days --> len={len(total_pol_emissions_per_day_list)}; and the list= {total_pol_emissions_per_day_list}')
 
 #========== method two
 
@@ -182,7 +182,7 @@ for list_iter in range(0,len(list_of_burning_days),1) : # keys = jdays with fire
 
     daily_total_emission = total_pol_emissions_per_day_list[ list_iter ]
     year_df.loc[ selected_jday_with_fire , 'daily_emission' ] = daily_total_emission # set each cell value by .loc method --> df.loc[row# , 'col_label']
-    print(f'-> daily total emission is= {daily_total_emission}')
+    #print(f'-> daily total emission is= {daily_total_emission}')
 
 # skip the first day with 0-index in the lists
 xx_ = list(year_df['jday'])            #[1:]
