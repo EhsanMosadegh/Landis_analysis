@@ -31,20 +31,21 @@ plot_format='png'  # 'png' 'svg'
 # select the domain
 my_domain= 'zoomed_domain' # 'zoomed_domain' or 'cmaq_domain'
 # save the plot or not?
-save_plot= 'no'  # 'yes' or 'no'
+save_plot= 'yes'  # 'yes' or 'no'
 # select scenario number
-scenario_no = '1'
+scenario_no = '5'
 # fsize=9  # font-size
 month_list = [ 'jul' , 'aug' , 'sep' , 'oct' , 'nov']
 
 # define what type of spatial plot
 spatial_plot_type='fires' # 'fires' or 'marker' or 'mesh'
 
-mesh_type='sample_plot_of_study_region' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'stats_region' or 'sample_plot_of_study_region'
+mesh_type='stats_region' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'stats_region' or 'sample_plot_of_study_region'
 
 # for single scen/month plots
 single_scen_per_month_plot = 'yes' 
 save_plot_single_scen_per_month = 'yes'
+#all_months_per_scenario_plot = 'yes'
 
 plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
 
@@ -71,9 +72,13 @@ stats_region_ll_lat= 38.87 #38.87
 xcent_cmaq= -120.806 					# degrees, ref_lon from WPS namelist
 ycent_cmaq= 38.45 							# degrees, ref_lat from WPS namelist
 
+### set the desired location
+lake_tahoe_center_lon= -120
+lake_tahoe_center_lat= 39
+
 ### center of my desired map== I like to set Lake Tahoe at the center
-lon_of_desired_center=marker_lon		# center of the map; degrees
-lat_of_desired_center=marker_lat		# center of the map; degrees
+lon_of_desired_center= lake_tahoe_center_lon		# center of the map; degrees
+lat_of_desired_center= lake_tahoe_center_lat		# center of the map; degrees
 
 # # lower-left corner of desired map, which I set it based on CMAQ LATD, LOND
 # lower_left_lon_list_of_fires=-122.0 # lower-left corner of the map; degrees, -120.1407
@@ -125,7 +130,7 @@ input_df_nonZero_days = input_df[ filter_nonZero_days ]
 # upper_right_lon_list_of_fires=-118.0 # meters
 # upper_right_lon_list_of_fires=40 # meters
 print(" ")
-print('-> making the map now ...')
+#print('-> making the map now ...')
 
 # draw the map background --> map of whole domain
 # desired_underlying_map= Basemap(projection='lcc' ,\
@@ -211,30 +216,35 @@ if ( spatial_plot_type == 'fires' ) :
 	#source: https://matplotlib.org/basemap/api/basemap_api.html
 
 		if ( single_scen_per_month_plot == 'yes' ) :
-		
-			desired_underlying_map= Basemap(projection='lcc' ,\
+			print(" ")
+			print(f'-> making the Basemap ...')
+
+			desired_underlying_map_for_fires= Basemap(projection='lcc' ,\
 			lat_0=lat_of_desired_center , lon_0=lon_of_desired_center ,\
 			height=NROWS_zoom , width=NCOLS_zoom ,\
-			resolution=spatial_res , area_thresh=0.5)
+			resolution=spatial_res , area_thresh=0.5 )
 
 			#==================================================================================
 			### set the background type of the basemap with zorder=1
-			desired_underlying_map.fillcontinents( lake_color='lightblue' , zorder=1 ) # ,
+			desired_underlying_map_for_fires.fillcontinents( lake_color='lightblue' , zorder=1 ) # ,
 			#desired_underlying_map.bluemarble( scale=4 , zorder=1 )
 			#desired_underlying_map.etopo( scale=2, alpha=0.5, zorder=1 )
 			#desired_underlying_map.shadedrelief( scale=2 , zorder=1 )
 
 			### draw other map characteristics
-			desired_underlying_map.drawmapboundary(color='k' )#, fill_color='#46bcec' ) #, fill_color='aqua')
-			desired_underlying_map.drawcoastlines(color = 'black' , zorder=2 )
-			desired_underlying_map.drawcounties(linewidth=0.5 , color='k' , zorder=3 )
-			desired_underlying_map.drawstates(zorder=4 )
+			desired_underlying_map_for_fires.drawmapboundary(color='k' )#, fill_color='#46bcec' ) #, fill_color='aqua')
+			desired_underlying_map_for_fires.drawcoastlines(color = 'black' , zorder=2 )
+			desired_underlying_map_for_fires.drawcounties(linewidth=0.5 , color='k' , zorder=3 )
+			desired_underlying_map_for_fires.drawstates(zorder=4 )
 			#==================================================================================
 
-			desired_underlying_map.scatter( lon_list_of_fires , lat_list_of_fires , latlon=True , marker= month_dict[month][2] , color= month_dict[month][3] , s=12 , label=month ,  zorder=5 ) # If lon_list_of_fireslon_list_of_fires is False (default), x and y are assumed to be in map projection coordinates.
+			desired_underlying_map_for_fires.scatter( lon_list_of_fires , lat_list_of_fires , latlon=True , marker= month_dict[month][2] , color= month_dict[month][3] , s=12 ,  zorder=5 ) # If lon_list_of_fireslon_list_of_fires is False (default), x and y are assumed to be in map projection coordinates.
 
-			plt.legend( scatterpoints=1 , frameon=True , title= 'number of fires' , loc='center left', bbox_to_anchor=(1, 0.5) ,
-		          fancybox=True )
+			# plt.legend( scatterpoints=1 , frameon=True , title= 'scen %s' %scenario_no , loc='center left', bbox_to_anchor=(1, 0.5) ,
+		 #          fancybox=True )
+			#plt.legend( loc= 'best' )
+			lon_of_text , lat_of_text = desired_underlying_map_for_fires(lon_of_desired_center , lat_of_desired_center)
+			plt.text( lon_of_text-45000 , lat_of_text+45000 , 'scen %s %s fires' %(scenario_no,month) )
 
 			plt.title(f'Spatial distribution of fires in LANDIS scenario {scenario_no} in month {month}' , fontsize=10 )
 
@@ -251,30 +261,61 @@ if ( spatial_plot_type == 'fires' ) :
 				print(" ")
 				print(f'-> plot saved at=')
 				print(saved_plot)
+				print(f'-> done')
 				print(" ")
-				plt.clf()
-				plt.cla()
+				plt.clf()  # clear f?
+				plt.cla()  # clear axis
 				plt.close()
 				#plt.show()
-				#del desired_underlying_map
 
+		#if ( all_months_per_scenario_plot == 'yes' ) :
 		else:
 
 			desired_underlying_map.scatter( lon_list_of_fires , lat_list_of_fires , latlon=True , marker= month_dict[month][2] , s=12 , label=month ,  zorder=5 ) # If lon_list_of_fireslon_list_of_fires is False (default), x and y are assumed to be in map projection coordinates.
 
-			plt.legend( scatterpoints=1 , frameon=True , title= 'number of fires' , loc='center left', bbox_to_anchor=(1, 0.5) ,
+			plt.legend( scatterpoints=1 , frameon=True , title= 'month' , loc='center left', bbox_to_anchor=(1, 0.5) ,
 			          fancybox=True )
 
 			plt.title(f'Spatial distribution of fires in LANDIS scenario {scenario_no}' , fontsize=10 )
 
 			plot_name = 'spatial_distribution_of_fires_for_allMonths_and_scen_'+scenario_no+'_'+my_domain+'.'+plot_format
 
+			#===========================================================
+			# save the plot
+			if (save_plot=='yes'):
+
+				# plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
+
+				saved_plot = plot_dir+plot_name
+				#extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+				plt.savefig(saved_plot , dpi=300 , format=plot_format ) #, bbox_inches='tight')
+
+				print(" ")
+				print(f'-> final plot saved at=')
+				print(saved_plot)
+				#plt.show()
+
 #===========================================================
 
 if (spatial_plot_type=='marker') :
 
  # plot for a position/place/marker
- 	desired_underlying_map.plot( marker_lon , marker_lat , marker='.' , color='k' , latlon=True )
+	desired_underlying_map.plot( marker_lon , marker_lat , marker='.' , color='k' , latlon=True )
+
+ 	#===========================================================
+	# save the plot
+	if (save_plot=='yes'):
+
+		# plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
+
+		saved_plot = plot_dir+plot_name
+		#extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+		plt.savefig(saved_plot , dpi=300 , format=plot_format ) #, bbox_inches='tight')
+
+		print(" ")
+		print(f'-> final plot saved at=')
+		print(saved_plot)
+		#plt.show()
 
 #===========================================================
 
@@ -415,20 +456,21 @@ if ( spatial_plot_type=='mesh' ) :
 
 	plot_name = 'plot_for_'+spatial_plot_type+'_'+mesh_type+'.'+plot_format
 
-#===========================================================
-# save the plot
-if (save_plot=='yes'):
+	#===========================================================
+	# save the plot
+	if (save_plot=='yes'):
 
-	# plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
+		# plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
 
-	saved_plot = plot_dir+plot_name
-	#extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-	plt.savefig(saved_plot , dpi=300 , format=plot_format ) #, bbox_inches='tight')
+		saved_plot = plot_dir+plot_name
+		#extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+		plt.savefig(saved_plot , dpi=300 , format=plot_format ) #, bbox_inches='tight')
 
-	print(" ")
-	print(f'-> plot saved at=')
-	print(saved_plot)
-	#plt.show()
+		print(" ")
+		print(f'-> final plot saved at=')
+		print(saved_plot)
+		#plt.show()
+
 	#===========================================================
 	# calculon_list_of_firese run time
 
@@ -439,6 +481,7 @@ if (save_plot=='yes'):
 	#===========================================================
 # show the plot
 else:
+
 	print(" ")
 	print(f'-> save plot for non fires plotting is= NO! so we only show it here.')
 	plt.show() # save the plot and then show it.
