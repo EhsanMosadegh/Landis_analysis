@@ -31,7 +31,7 @@ plot_format='png'  # 'png' 'svg'
 # select the domain
 my_domain= 'zoomed_domain' # 'zoomed_domain' or 'cmaq_domain'
 # save the plot or not?
-save_plot= 'no'  # 'yes' or 'no'
+save_plot= 'yes'  # 'yes' or 'no'
 # select scenario number
 scenario_no = '1'
 # fsize=9  # font-size
@@ -40,7 +40,7 @@ month_list = [ 'jul' , 'aug' , 'sep' , 'oct' , 'nov']
 # define what type of spatial plot
 spatial_plot_type='mesh' # 'fires' or 'marker' or 'mesh'
 
-mesh_type='statistical_region' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'statistical_region' or 'example_plot_of_study_region'
+mesh_type='example_plot_of_study_region' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'statistical_region' or 'example_plot_of_study_region'
 
 # for single scen/month plots
 single_scen_per_month_plot = 'no' 
@@ -56,19 +56,19 @@ zoomed_domain_zoomOut_scale_factor=10
 cmaq_domain_zoomOut_scale_factor=1
 mesh_domain_range= 50
 
-### for statistics mesh
-statistical_region_ll_lon= -120.05 	#-120.25
-statistical_region_ll_lat= 39.2245 		#38.87
-statistical_region_name= 'north Tahoe'
-range_in_row= 8
-range_in_col= 8
+### setting for statistical region ...
+stats_region_orig_ll_lon= -120.15 	#-120.25
+stats_region_orig_ll_lat= 38.93 		#38.87
+statistical_region_name= 'Ndep'
+range_in_row= 37
+range_in_col= 20
 
 
 ### set the station location
 stn_lon= -120
 stn_lat= 39
 
-### for a locatio
+### for a location
 marker_lon=stn_lon		#-120.0324
 marker_lat=stn_lat		#39.0968
 
@@ -181,7 +181,8 @@ desired_underlying_map.drawstates(zorder=4 )
 
 
 print(" ")
-#===========================================================
+
+#================================================================================================================
 # make plots for different spatial plot types
 
 if ( spatial_plot_type == 'fires' ) :
@@ -301,7 +302,7 @@ if ( spatial_plot_type == 'fires' ) :
 				print(saved_plot)
 				#plt.show()
 
-#===========================================================
+#================================================================================================================
 
 if (spatial_plot_type=='marker') :
 
@@ -310,6 +311,7 @@ if (spatial_plot_type=='marker') :
 
  	#===========================================================
 	# save the plot
+
 	if (save_plot=='yes'):
 
 		# plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
@@ -323,7 +325,7 @@ if (spatial_plot_type=='marker') :
 		print(saved_plot)
 		#plt.show()
 
-#===========================================================
+#================================================================================================================
 
 if ( spatial_plot_type == 'mesh' ) :
 
@@ -377,6 +379,7 @@ if ( spatial_plot_type == 'mesh' ) :
 
 		desired_underlying_map.plot( lon_coord_list , lat_coord_list , color='r' , latlon=True , zorder=5 )  # for drawing line, don't use marker kwrd
 
+#================================================================================================================
 
 	if ( mesh_type=='station_inside_cell' ) :
 
@@ -416,13 +419,14 @@ if ( spatial_plot_type == 'mesh' ) :
 
 		desired_underlying_map.plot( stn_cell_lon_list , stn_cell_lat_list , color='r' , latlon=True , zorder=5 )
 
-
+#================================================================================================================
 
 	if ( mesh_type=='statistical_region' ) :
 
-		### NOITE: totasl diff array is computed from CROSS points (= center of the cells)
-		lon_diff_arr=lon_cross_array - statistical_region_ll_lon
-		lat_diff_arr=lat_cross_array - statistical_region_ll_lat
+		print(f'-> processing region= {mesh_type}')
+		### NOITE: total diff array is computed from CROSS points (= center of the cells)
+		lon_diff_arr = lon_cross_array - stats_region_orig_ll_lon
+		lat_diff_arr = lat_cross_array - stats_region_orig_ll_lat
 
 		#print(f'-> type of {lon_diff_arr} is= {type(lon_diff_arr)} ')
 
@@ -436,7 +440,7 @@ if ( spatial_plot_type == 'mesh' ) :
 
 		print(f'-> row of the cell contaning the point is= {row_of_cell_with_point}')
 		print(f'-> column of the cell contaning the point is= {col_of_cell_with_marker}')
-		print(f'-> now plot the mesh from the starting cell= {row_of_cell_with_point , col_of_cell_with_marker} ')
+		print(f'-> now plot the mesh from the origin == starting cell= {row_of_cell_with_point , col_of_cell_with_marker} ')
 
 		# for row in range( row_of_cell_with_point , row_of_cell_with_point + mesh_domain_range , 1 ) :
 		# 	for column in range( col_of_cell_with_marker , col_of_cell_with_marker + mesh_domain_range , 1 ) :
@@ -460,8 +464,9 @@ if ( spatial_plot_type == 'mesh' ) :
 		stats_lat_list= [ ll_lat , ul_lat , ur_lat , lr_lat , ll_lat ]
 
 		print(" ")
-		print(f'-> domain range from ll point is= {range_in_row}')
+		print(f'-> domain range in row from ll point is= {range_in_row}')
 		print(f'-> domain range in col from ll point is={range_in_col} ')
+		print(" ")
 		print(f'-> ll lon= {ll_lon} ')
 		print(f'-> ll lat= {ll_lat} ')
 		print(f'-> ul lon= {ul_lon} ')
@@ -475,27 +480,28 @@ if ( spatial_plot_type == 'mesh' ) :
 		x,y=desired_underlying_map(ur_lon , ur_lat)
 		plt.text( x , y , statistical_region_name , fontsize=8 , color='r')
 
+#================================================================================================================
 
 	if ( mesh_type == 'example_plot_of_study_region') :
 
 		### order is= ll,ul,ur,lr,and again ll
-		# LTB_lon_list = [ -120.30 , -120.30 , -119.83 , -119.83 , -120.30 ] 
-		# LTB_lat_list = [ 38.87 , 39.30 , 39.30 , 38.87 , 38.87 ]
+		LTB_lon_list = [ -120.30 , -120.30 , -119.86 , -119.86 , -120.30 ] 
+		LTB_lat_list = [ 38.87 , 39.31 , 39.31 , 38.87 , 38.87 ]
 
-		southLakeTahoe_lon_list = [ -120.05 , -120.05 , -119.95 , -119.95 , -120.05 ]
-		southLakeTahoe_lat_list = [ 38.88 , 38.95 , 38.95 , 38.88 , 38.88 ]
+		southLakeTahoe_lon_list = [ -120.06 , -120.06 , -119.96 , -119.96 , -120.06 ]
+		southLakeTahoe_lat_list = [ 38.87 , 38.94 , 38.94 , 38.87 , 38.87 ]
 
-		northTahoe_lon_list = [ -120.05 , -120.05 , -119.97 , -119.97 , -120.05 ]
-		northTahoe_lat_list = [ 39.2245 , 39.28 , 39.28 , 39.2245 , 39.2245 ]
+		northTahoe_lon_list = [ -120.05 , -120.05 , -119.96 , -119.96 , -120.05 ]
+		northTahoe_lat_list = [ 39.217 , 39.289 , 39.289 , 39.217 , 39.217 ]
 
-		N_dep_domain_lon_list = [ -120.16 , -120.16 ,   -119.915 , -119.915   ,  -120.16 ]
-		N_dep_domain_lat_list = [ 38.93 , 39.27 , 39.27 , 38.93 , 38.93 ]
+		N_dep_domain_lon_list = [ -120.152 , -120.152 ,   -119.915 , -119.915   ,  -120.152 ]
+		N_dep_domain_lat_list = [ 38.93 , 39.262 , 39.262 , 38.93 , 38.93 ]
 
 
 
-		# desired_underlying_map.plot( LTB_lon_list , LTB_lat_list , latlon=True , zorder=5 )
-		# x,y=desired_underlying_map(-119.82 , 39.3)
-		# plt.text( x , y , 'LTB' , fontsize=8 , color='r')
+		desired_underlying_map.plot( LTB_lon_list , LTB_lat_list , latlon=True , zorder=5 )
+		x,y=desired_underlying_map(-119.82 , 39.3)
+		plt.text( x , y , 'LTB' , fontsize=8 , color='r')
 
 		desired_underlying_map.plot( southLakeTahoe_lon_list , southLakeTahoe_lat_list , latlon=True , zorder=5 )
 		x,y=desired_underlying_map(-119.95 , 38.92)
@@ -512,8 +518,8 @@ if ( spatial_plot_type == 'mesh' ) :
 
 	plot_name = 'plot_for_'+spatial_plot_type+'_'+mesh_type+'.'+plot_format
 
-	#===========================================================
-	# save the plot
+#================================================================================================================	# save the plot
+
 	if (save_plot=='yes'):
 
 		# plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
@@ -533,14 +539,13 @@ if ( spatial_plot_type == 'mesh' ) :
 		print(f'-> save plot for non fires plotting is= NO! so we only show it here.')
 		plt.show() #
 
-	#===========================================================
-	# calculon_list_of_firese run time
+#================================================================================================================	# calculon_list_of_firese run time
 
 	end = time.time()
 
 	print( f'-> run time= { (( end - start ) / 60 ) :.2f} min' )  # f-string
 
-	#===========================================================
+#================================================================================================================
 # show the plot
 # else:
 
