@@ -31,20 +31,20 @@ plot_format='png'  # 'png' 'svg'
 # select the domain
 my_domain= 'zoomed_domain' # 'zoomed_domain' or 'cmaq_domain'
 # save the plot or not?
-save_plot= 'yes'  # 'yes' or 'no'
+save_plot= 'no'  # 'yes' or 'no'
 # select scenario number
 scenario_no = '1'
 # fsize=9  # font-size
 month_list = [ 'jul' , 'aug' , 'sep' , 'oct' , 'nov']
 
 # define what type of spatial plot
-spatial_plot_type='fires' # 'fires' or 'marker' or 'mesh'
+spatial_plot_type='mesh' # 'fires' or 'marker' or 'mesh'
 
-mesh_type='stats_region' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'stats_region' or 'sample_plot_of_study_region'
+mesh_type='statistical_region' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'statistical_region' or 'example_plot_of_study_region'
 
 # for single scen/month plots
-single_scen_per_month_plot = 'yes' 
-save_plot_single_scen_per_month = 'yes'
+single_scen_per_month_plot = 'no' 
+save_plot_single_scen_per_month = 'no'
 #all_months_per_scenario_plot = 'yes'
 
 plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
@@ -56,6 +56,14 @@ zoomed_domain_zoomOut_scale_factor=10
 cmaq_domain_zoomOut_scale_factor=1
 mesh_domain_range= 50
 
+### for statistics mesh
+statistical_region_ll_lon= -120.05 	#-120.25
+statistical_region_ll_lat= 39.2245 		#38.87
+statistical_region_name= 'north Tahoe'
+range_in_row= 8
+range_in_col= 8
+
+
 ### set the station location
 stn_lon= -120
 stn_lat= 39
@@ -63,10 +71,6 @@ stn_lat= 39
 ### for a locatio
 marker_lon=stn_lon		#-120.0324
 marker_lat=stn_lat		#39.0968
-
-### for statistics mesh
-stats_region_ll_lon= -120.30 #-120.25
-stats_region_ll_lat= 38.87 #38.87
 
 ### center of CMAQ domain
 xcent_cmaq= -120.806 					# degrees, ref_lon from WPS namelist
@@ -99,6 +103,8 @@ print(f'-> save plot is= {save_plot} ')
 print(f'-> plot domain is set to= {my_domain} ')
 print(f'-> resolution is= ({spatial_res}) ')
 print(f'-> spatial plot type is= {spatial_plot_type}')
+print(f'-> mesh type is= {mesh_type}')
+print(f'-> statistical region name is= {statistical_region_name}')
 
 #===========================================================
 # define the input file
@@ -319,22 +325,22 @@ if (spatial_plot_type=='marker') :
 
 #===========================================================
 
-if ( spatial_plot_type=='mesh' ) :
+if ( spatial_plot_type == 'mesh' ) :
 
 	# plot a mesh on the map
-	dir_path='/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/'
+	dir_path = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/'
 
-	grid_dot_file_name='GRIDDOT2D_161001'
-	grid_cross_file_name='GRIDCRO2D_161001'
+	grid_dot_file_name = 'GRIDDOT2D_161001'
+	grid_cross_file_name = 'GRIDCRO2D_161001'
 
-	grid_dot_file=dir_path+grid_dot_file_name
-	grid_cross_file=dir_path+grid_cross_file_name
+	grid_dot_file = dir_path+grid_dot_file_name
+	grid_cross_file = dir_path+grid_cross_file_name
 
 	print(f'-> GRID_DOT file is= {grid_dot_file}')
 	print(f'-> GRID_CRO file is= {grid_cross_file}')
 
-	grid_dot_open=Dataset( grid_dot_file , 'r')
-	grid_cross_open=Dataset( grid_cross_file , 'r')
+	grid_dot_open = Dataset( grid_dot_file , 'r')
+	grid_cross_open = Dataset( grid_cross_file , 'r')
 
 	print('-----------------------------------------')
 	print(f'-> info for file {grid_dot_file_name} is=')
@@ -346,25 +352,25 @@ if ( spatial_plot_type=='mesh' ) :
 	print('-> shape is= %s' %str(grid_cross_open.variables['LON'].shape )) # and this
 	print('-----------------------------------------')
 
-	lon_dot_arr=np.array( grid_dot_open.variables['LOND'][0,0,:,:] )
-	lat_dot_arr=np.array( grid_dot_open.variables['LATD'][0,0,:,:] )
+	lon_dot_array=np.array( grid_dot_open.variables['LOND'][0,0,:,:] )
+	lat_dot_array=np.array( grid_dot_open.variables['LATD'][0,0,:,:] )
 
-	lon_cross_arr=np.array( grid_cross_open.variables['LON'][0,0,:,:] )
-	lat_cross_arr=np.array( grid_cross_open.variables['LAT'][0,0,:,:] )
+	lon_cross_array=np.array( grid_cross_open.variables['LON'][0,0,:,:] )
+	lat_cross_array=np.array( grid_cross_open.variables['LAT'][0,0,:,:] )
 
 	# plot for different mesh type
 	if ( mesh_type=='sample_mesh' ) :
 
-		desired_underlying_map.scatter( lon_dot_arr , lat_dot_arr , marker='.' , color='b' , latlon=True , zorder=5 )
-		desired_underlying_map.scatter( lon_cross_arr , lat_cross_arr , marker='+' , color='k' , latlon=True , zorder=6 )
+		desired_underlying_map.scatter( lon_dot_array , lat_dot_array , marker='.' , color='b' , latlon=True , zorder=5 )
+		desired_underlying_map.scatter( lon_cross_array , lat_cross_array , marker='+' , color='k' , latlon=True , zorder=6 )
 
 	# plot for different mesh type
 	if ( mesh_type=='modeling_domain') :
 
-		lon_min=np.min( lon_dot_arr ) # get the min from dot arr
-		lon_max=np.max( lon_dot_arr ) # get max of dot arr
-		lat_min=np.min( lat_dot_arr ) # get min of lat dot arr
-		lat_max=np.max( lat_dot_arr ) # get max of dot lat arr
+		lon_min=np.min( lon_dot_array ) # get the min from dot arr
+		lon_max=np.max( lon_dot_array ) # get max of dot arr
+		lat_min=np.min( lat_dot_array ) # get min of lat dot arr
+		lat_max=np.max( lat_dot_array ) # get max of dot lat arr
 
 		lon_coord_list=[lon_min , lon_min , lon_max , lon_max , lon_min ] # put the points in order to appear
 		lat_coord_list=[lat_min , lat_max , lat_max , lat_min , lat_min ]
@@ -374,32 +380,32 @@ if ( spatial_plot_type=='mesh' ) :
 
 	if ( mesh_type=='station_inside_cell' ) :
 
-		lon_diff_arr=lon_cross_arr-stn_lon
-		lat_diff_arr=lat_cross_arr-stn_lat
+		lon_diff_arr=lon_cross_array-stn_lon
+		lat_diff_arr=lat_cross_array-stn_lat
 
 		#print(f'-> type of {lon_diff_arr} is= {type(lon_diff_arr)} ')
 
 		total_diff_arr=np.abs( lon_diff_arr ) + np.abs( lat_diff_arr )
 
-		tuple_of_row_col=np.argwhere( total_diff_arr==np.min(total_diff_arr) )[0]
+		tuple_of_row_col_of_cell=np.argwhere( total_diff_arr==np.min(total_diff_arr) )[0]
 
-		print(f'-> row/col of our cell is= {tuple_of_row_col} ')
-		stn_row=tuple_of_row_col[0]
-		stn_col=tuple_of_row_col[1]
+		print(f'-> row/col of our cell is= {tuple_of_row_col_of_cell} ')
+		stn_row=tuple_of_row_col_of_cell[0]
+		stn_col=tuple_of_row_col_of_cell[1]
 
 		print(f'-> station row is= {stn_row}')
 		print(f'-> station row is= {stn_col}')
 
 		### get the corners of the cell that station falls inside it
-		ll_lat=lat_dot_arr[ stn_row , stn_col ]
-		ul_lat=lat_dot_arr[ stn_row+1 , stn_col ]
-		ur_lat=lat_dot_arr[ stn_row+1 , stn_col+1 ]
-		lr_lat=lat_dot_arr[ stn_row , stn_col+1 ]
+		ll_lat=lat_dot_array[ stn_row , stn_col ]
+		ul_lat=lat_dot_array[ stn_row+1 , stn_col ]
+		ur_lat=lat_dot_array[ stn_row+1 , stn_col+1 ]
+		lr_lat=lat_dot_array[ stn_row , stn_col+1 ]
 
-		ll_lon=lon_dot_arr[ stn_row , stn_col ]
-		ul_lon=lon_dot_arr[ stn_row+1 , stn_col ]
-		ur_lon=lon_dot_arr[ stn_row+1 , stn_col+1 ]
-		lr_lon=lon_dot_arr[ stn_row , stn_col+1 ]
+		ll_lon=lon_dot_array[ stn_row , stn_col ]
+		ul_lon=lon_dot_array[ stn_row+1 , stn_col ]
+		ur_lon=lon_dot_array[ stn_row+1 , stn_col+1 ]
+		lr_lon=lon_dot_array[ stn_row , stn_col+1 ]
 
 		stn_cell_lon_list=[ ll_lon , ul_lon , ur_lon , lr_lon , ll_lon ]
 		stn_cell_lat_list=[ ll_lat , ul_lat , ur_lat , lr_lat , ll_lat ]
@@ -411,48 +417,98 @@ if ( spatial_plot_type=='mesh' ) :
 		desired_underlying_map.plot( stn_cell_lon_list , stn_cell_lat_list , color='r' , latlon=True , zorder=5 )
 
 
-	if ( mesh_type=='stats_region' ) :
 
-		lon_diff_arr=lon_cross_arr-stats_region_ll_lon
-		lat_diff_arr=lat_cross_arr-stats_region_ll_lat
+	if ( mesh_type=='statistical_region' ) :
+
+		### NOITE: totasl diff array is computed from CROSS points (= center of the cells)
+		lon_diff_arr=lon_cross_array - statistical_region_ll_lon
+		lat_diff_arr=lat_cross_array - statistical_region_ll_lat
 
 		#print(f'-> type of {lon_diff_arr} is= {type(lon_diff_arr)} ')
 
-		total_diff_arr=np.abs( lon_diff_arr ) + np.abs( lat_diff_arr )
+		total_diff_arr = np.abs( lon_diff_arr ) + np.abs( lat_diff_arr )
 
-		tuple_of_row_col=np.argwhere( total_diff_arr==np.min(total_diff_arr) )[0]
+		tuple_of_row_col_of_cell = np.argwhere( total_diff_arr==np.min(total_diff_arr) )[0]
 
-		print(f'-> row/col of our cell is= {tuple_of_row_col} ')
-		marker_row=tuple_of_row_col[0]
-		marker_col=tuple_of_row_col[1]
+		print(f'-> row/col of our cell with the marker inside it (from CROSS array) is= {tuple_of_row_col_of_cell} ')
+		row_of_cell_with_point = tuple_of_row_col_of_cell[0]
+		col_of_cell_with_marker = tuple_of_row_col_of_cell[1]
 
-		print(f'-> cell row is= {marker_row}')
-		print(f'-> cell row is= {marker_col}')
-		print(f'-> now plot the mesh from the starting cell= {marker_row , marker_col} ')
+		print(f'-> row of the cell contaning the point is= {row_of_cell_with_point}')
+		print(f'-> column of the cell contaning the point is= {col_of_cell_with_marker}')
+		print(f'-> now plot the mesh from the starting cell= {row_of_cell_with_point , col_of_cell_with_marker} ')
 
-		for row in range( marker_row , marker_row + mesh_domain_range , 1 ) :
-			for column in range( marker_col , marker_col + mesh_domain_range , 1 ) :
+		# for row in range( row_of_cell_with_point , row_of_cell_with_point + mesh_domain_range , 1 ) :
+		# 	for column in range( col_of_cell_with_marker , col_of_cell_with_marker + mesh_domain_range , 1 ) :
 
-				#print(f'-> for row= {row} and col= {column}')
-				desired_underlying_map.plot( lon_cross_arr[row , column] , lat_cross_arr[row , column] , marker='.' , color='grey' , latlon=True )
+		# 		#print(f'-> for row= {row} and col= {column}')
+		# 		desired_underlying_map.plot( lon_cross_array[row , column] , lat_cross_array[row , column] , marker='.' , color='grey' , latlon=True )
+
+		ll_lon = lon_dot_array[ row_of_cell_with_point , col_of_cell_with_marker ]
+		ll_lat = lat_dot_array[ row_of_cell_with_point , col_of_cell_with_marker]
+
+		ul_lon = ll_lon
+		ul_lat = lat_dot_array[ row_of_cell_with_point + range_in_row , col_of_cell_with_marker]
+
+		ur_lon = lon_dot_array[ row_of_cell_with_point + range_in_row , col_of_cell_with_marker + range_in_col ]
+		ur_lat = lat_dot_array[ row_of_cell_with_point + range_in_row , col_of_cell_with_marker + range_in_col ]
+
+		lr_lon = lon_dot_array[ row_of_cell_with_point , col_of_cell_with_marker + range_in_col]
+		lr_lat = ll_lat
+
+		stats_lon_list= [ ll_lon , ul_lon , ur_lon , lr_lon , ll_lon ]
+		stats_lat_list= [ ll_lat , ul_lat , ur_lat , lr_lat , ll_lat ]
+
+		print(" ")
+		print(f'-> domain range from ll point is= {range_in_row}')
+		print(f'-> domain range in col from ll point is={range_in_col} ')
+		print(f'-> ll lon= {ll_lon} ')
+		print(f'-> ll lat= {ll_lat} ')
+		print(f'-> ul lon= {ul_lon} ')
+		print(f'-> ul lat= {ul_lat} ')
+		print(f'-> ur lon= {ur_lon} ')
+		print(f'-> ur lat= {ur_lat} ')
+		print(f'-> lr lon= {lr_lon} ')
+		print(f'-> lr lat= {lr_lat} ')
+
+		desired_underlying_map.plot( stats_lon_list , stats_lat_list , latlon=True , zorder=5 )
+		x,y=desired_underlying_map(ur_lon , ur_lat)
+		plt.text( x , y , statistical_region_name , fontsize=8 , color='r')
 
 
-	if ( mesh_type == 'sample_plot_of_study_region') :
+	if ( mesh_type == 'example_plot_of_study_region') :
 
 		### order is= ll,ul,ur,lr,and again ll
-		LTB_lon_list=[ -120.30 , -120.30 , -119.83 , -119.83 , -120.30 ] 
-		LTB_lat_list=[ 38.87 , 39.30 , 39.30 , 38.87 , 38.87 ]
+		# LTB_lon_list = [ -120.30 , -120.30 , -119.83 , -119.83 , -120.30 ] 
+		# LTB_lat_list = [ 38.87 , 39.30 , 39.30 , 38.87 , 38.87 ]
 
-		southLakeTahoe_lon_list=[ -120.05 , -120.05 , -119.95 , -119.95 , -120.05 ]
-		southLakeTahoe_lat_list=[ 38.88 , 38.95 , 38.95 , 38.88 , 38.88 ]
+		southLakeTahoe_lon_list = [ -120.05 , -120.05 , -119.95 , -119.95 , -120.05 ]
+		southLakeTahoe_lat_list = [ 38.88 , 38.95 , 38.95 , 38.88 , 38.88 ]
 
-		desired_underlying_map.plot( LTB_lon_list , LTB_lat_list , latlon=True , zorder=5 )
-		x,y=desired_underlying_map(-119.82 , 39.3)
-		plt.text( x , y , 'LTB' , fontsize=8 , color='r')
+		northTahoe_lon_list = [ -120.05 , -120.05 , -119.97 , -119.97 , -120.05 ]
+		northTahoe_lat_list = [ 39.2245 , 39.28 , 39.28 , 39.2245 , 39.2245 ]
+
+		N_dep_domain_lon_list = [ -120.16 , -120.16 ,   -119.915 , -119.915   ,  -120.16 ]
+		N_dep_domain_lat_list = [ 38.93 , 39.27 , 39.27 , 38.93 , 38.93 ]
+
+
+
+		# desired_underlying_map.plot( LTB_lon_list , LTB_lat_list , latlon=True , zorder=5 )
+		# x,y=desired_underlying_map(-119.82 , 39.3)
+		# plt.text( x , y , 'LTB' , fontsize=8 , color='r')
 
 		desired_underlying_map.plot( southLakeTahoe_lon_list , southLakeTahoe_lat_list , latlon=True , zorder=5 )
 		x,y=desired_underlying_map(-119.95 , 38.92)
-		plt.text( x , y , 'SouthLakeTahoe' , fontsize=8 , color='r')
+		plt.text( x , y , 'South Lake Tahoe' , fontsize=8 , color='r')
+
+		desired_underlying_map.plot( northTahoe_lon_list , northTahoe_lat_list , latlon=True , zorder=5 )
+		x,y=desired_underlying_map(-119.971 , 39.281)
+		plt.text( x , y , 'North Lake Tahoe' , fontsize=8 , color='r')
+
+		desired_underlying_map.plot( N_dep_domain_lon_list , N_dep_domain_lat_list , latlon=True , zorder=5 )
+		x,y=desired_underlying_map(-119.91 , 39.241)
+		plt.text( x , y , 'N-dep domain' , fontsize=8 , color='r')
+
 
 	plot_name = 'plot_for_'+spatial_plot_type+'_'+mesh_type+'.'+plot_format
 
@@ -471,6 +527,12 @@ if ( spatial_plot_type=='mesh' ) :
 		print(saved_plot)
 		#plt.show()
 
+	else:
+
+		print(" ")
+		print(f'-> save plot for non fires plotting is= NO! so we only show it here.')
+		plt.show() #
+
 	#===========================================================
 	# calculon_list_of_firese run time
 
@@ -480,8 +542,8 @@ if ( spatial_plot_type=='mesh' ) :
 
 	#===========================================================
 # show the plot
-else:
+# else:
 
-	print(" ")
-	print(f'-> save plot for non fires plotting is= NO! so we only show it here.')
-	plt.show() # save the plot and then show it.
+# 	print(" ")
+# 	print(f'-> save plot for non fires plotting is= NO! so we only show it here.')
+# 	plt.show() # save the plot and then show it.
