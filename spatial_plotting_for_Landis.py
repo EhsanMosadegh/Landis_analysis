@@ -29,18 +29,18 @@ spatial_res= 'i' # 'l' , 'i' , 'f'
 # set output format
 plot_format='png'  # 'png' 'svg'
 # select the domain
-my_domain= 'zoomed_domain' # 'zoomed_domain' or 'cmaq_domain'
+my_domain= 'cmaq_domain' # 'zoomed_domain' or 'cmaq_domain'
 # save the plot or not?
-save_plot= 'yes'  # 'yes' or 'no'
+save_plot= 'no'  # 'yes' or 'no'
 # select scenario number
 scenario_no = '1'
 # fsize=9  # font-size
 month_list = [ 'jul' , 'aug' , 'sep' , 'oct' , 'nov']
 
 # define what type of spatial plot
-spatial_plot_type='mesh' # 'fires' or 'marker' or 'mesh'
+spatial_plot_type='fires' # 'fires' or 'marker' or 'mesh'
 
-mesh_type='example_plot_of_study_region' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'statistical_region' or 'example_plot_of_study_region'
+mesh_type='modeling_domain' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'statistical_region' or 'example_plot_of_study_region'
 
 # for single scen/month plots
 single_scen_per_month_plot = 'no' 
@@ -224,7 +224,7 @@ if ( spatial_plot_type == 'fires' ) :
 
 		if ( single_scen_per_month_plot == 'yes' ) :
 			print(" ")
-			print(f'-> making the Basemap ...')
+			print(f'-> making the Basemap for single_scen_per_month_plot ...')
 
 			desired_underlying_map_for_fires= Basemap(projection='lcc' ,\
 			lat_0=lat_of_desired_center , lon_0=lon_of_desired_center ,\
@@ -261,6 +261,7 @@ if ( spatial_plot_type == 'fires' ) :
 			# save the plot
 			if ( save_plot_single_scen_per_month =='yes' ) :
 
+				print(f'-> save_plot_single_scen_per_month is yes... ')
 				saved_plot = plot_dir+plot_name
 				#extent = ax2.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
 				plt.savefig(saved_plot , dpi=dpi_res , format=plot_format ) #, bbox_inches='tight')
@@ -278,6 +279,8 @@ if ( spatial_plot_type == 'fires' ) :
 		#if ( all_months_per_scenario_plot == 'yes' ) :
 		else:
 
+			print ('-> single_scen_per_month_plot is no ...')
+
 			desired_underlying_map.scatter( lon_list_of_fires , lat_list_of_fires , latlon=True , marker= month_dict[month][2] , s=12 , label=month ,  zorder=5 ) # If lon_list_of_fireslon_list_of_fires is False (default), x and y are assumed to be in map projection coordinates.
 
 			plt.legend( scatterpoints=1 , frameon=True , title= 'month' , loc='center left', bbox_to_anchor=(1, 0.5) ,
@@ -291,6 +294,7 @@ if ( spatial_plot_type == 'fires' ) :
 			# save the plot
 			if (save_plot=='yes'):
 
+				print( '-> save plot is yes ...')
 				# plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
 
 				saved_plot = plot_dir+plot_name
@@ -300,7 +304,8 @@ if ( spatial_plot_type == 'fires' ) :
 				print(" ")
 				print(f'-> final plot saved at=')
 				print(saved_plot)
-				#plt.show()
+			else:
+				plt.show()
 
 #================================================================================================================
 
