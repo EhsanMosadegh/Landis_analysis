@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ############################################################
 # author: Ehsan Mosadegh
@@ -29,22 +30,21 @@ spatial_res= 'i' # 'l' , 'i' , 'f'
 # set output format
 plot_format='png'  # 'png' 'svg'
 # select the domain
-my_domain= 'cmaq_domain' # 'zoomed_domain' or 'cmaq_domain'
+basemap_domain= 'zoomed_domain' # 'zoomed_domain' or 'cmaq_domain'
+# define what type of spatial plot
+spatial_plot_type='mesh' # 'fires' or 'marker' or 'mesh'  # NOTE: 'fires' spatial plot does not work with save_plot = no, if selected mesh then select_type select from below
+# select mesh type
+mesh_type='station_inside_cell' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'statistical_region' or 'example_plot_of_study_region'
 # save the plot or not?
 save_plot= 'no'  # 'yes' or 'no'
 # select scenario number
-scenario_no = '1'
+scenario_no = '5'
 # fsize=9  # font-size
 month_list = [ 'jul' , 'aug' , 'sep' , 'oct' , 'nov']
 
-# define what type of spatial plot
-spatial_plot_type='fires' # 'fires' or 'marker' or 'mesh'
-
-mesh_type='modeling_domain' # 'sample_mesh' or 'modeling_domain' or 'station_inside_cell' or 'statistical_region' or 'example_plot_of_study_region'
-
 # for single scen/month plots
-single_scen_per_month_plot = 'no' 
-save_plot_single_scen_per_month = 'no'
+single_scen_per_month_plot = 'yes' 
+save_plot_single_scen_per_month = 'yes'
 #all_months_per_scenario_plot = 'yes'
 
 plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_inputs/plots/'
@@ -52,7 +52,7 @@ plot_dir = '/Users/ehsan/Documents/Python_projects/USFS_fire/inputs/landis_input
 #===========================================================
 # Basemap plot setting
 
-zoomed_domain_zoomOut_scale_factor=10
+zoomed_domain_zoomOut_scale_factor=7
 cmaq_domain_zoomOut_scale_factor=1
 mesh_domain_range= 50
 
@@ -63,22 +63,21 @@ statistical_region_name= 'Ndep'
 range_in_row= 37
 range_in_col= 20
 
-
-### set the station location
-stn_lon= -120
-stn_lat= 39
-
 ### for a location
-marker_lon=stn_lon		#-120.0324
-marker_lat=stn_lat		#39.0968
+marker_lon= -120.14883		#-120.0324, -120.14883
+marker_lat= 39.16602		#39.0968
+
+### if mesh_type = station_inside_cell, then set the station location
+stn_lon= marker_lon
+stn_lat= marker_lat
 
 ### center of CMAQ domain
 xcent_cmaq= -120.806 					# degrees, ref_lon from WPS namelist
 ycent_cmaq= 38.45 							# degrees, ref_lat from WPS namelist
 
 ### set the desired location
-lake_tahoe_center_lon= -120
-lake_tahoe_center_lat= 39
+lake_tahoe_center_lon= -120.0324
+lake_tahoe_center_lat= 39.02
 
 ### center of my desired map== I like to set Lake Tahoe at the center
 lon_of_desired_center= lake_tahoe_center_lon		# center of the map; degrees
@@ -100,7 +99,7 @@ NCOLS_zoom = 10000*zoomed_domain_zoomOut_scale_factor # width of the map; meters
 scenario_year = 30
 
 print(f'-> save plot is= {save_plot} ')
-print(f'-> plot domain is set to= {my_domain} ')
+print(f'-> plot domain is set to= {basemap_domain} ')
 print(f'-> resolution is= ({spatial_res}) ')
 print(f'-> spatial plot type is= {spatial_plot_type}')
 print(f'-> mesh type is= {mesh_type}')
@@ -146,8 +145,8 @@ print(" ")
 # 	 resolution='l' , area_thresh=0.5) # urcrnrx=upper_right_lon_list_of_fires , urcrnry=upper_right_lon_list_of_fires
 
 # first, we plot a desired base-map, and then we plot our data on this map
-if (my_domain=='cmaq_domain'):
-	print(f'-> domain is= {my_domain}')
+if (basemap_domain=='cmaq_domain'):
+	print(f'-> domain is= {basemap_domain}')
 	print(" ")
 
 	desired_underlying_map= Basemap(projection='lcc' ,\
@@ -156,8 +155,8 @@ if (my_domain=='cmaq_domain'):
 		resolution=spatial_res , area_thresh=0.5)
 
 # new version of my map --> zoomed map
-if(my_domain=='zoomed_domain'):
-	print(f'-> domain is= {my_domain}')
+if(basemap_domain=='zoomed_domain'):
+	print(f'-> domain is= {basemap_domain}')
 	print(" ")
 
 	desired_underlying_map= Basemap(projection='lcc' ,\
@@ -202,6 +201,7 @@ if ( spatial_plot_type == 'fires' ) :
 
 	for month in month_list :
 
+		print(" ")
 		print( f'-> processing month= {month}' )
 
 		beginning_of_month= ( input_df_nonZero_days[ 'FireDay-30' ] )
@@ -251,11 +251,11 @@ if ( spatial_plot_type == 'fires' ) :
 		 #          fancybox=True )
 			#plt.legend( loc= 'best' )
 			lon_of_text , lat_of_text = desired_underlying_map_for_fires(lon_of_desired_center , lat_of_desired_center)
-			plt.text( lon_of_text-45000 , lat_of_text+45000 , 'scen %s %s fires' %(scenario_no,month) )
+			plt.text( lon_of_text-33000 , lat_of_text+30000 , 'scen %s %s fires' %(scenario_no,month) )
 
 			plt.title(f'Spatial distribution of fires in LANDIS scenario {scenario_no} in month {month}' , fontsize=10 )
 
-			plot_name = 'spatial_distribution_of_fires_for_mon_'+month+'_and_scen_'+scenario_no+'_'+my_domain+'.'+plot_format
+			plot_name = 'spatial_distribution_of_fires_for_mon_'+month+'_and_scen_'+scenario_no+'_'+basemap_domain+'.'+plot_format
 
 			#===========================================================
 			# save the plot
@@ -271,10 +271,13 @@ if ( spatial_plot_type == 'fires' ) :
 				print(saved_plot)
 				print(f'-> done')
 				print(" ")
-				plt.clf()  # clear f?
-				plt.cla()  # clear axis
-				plt.close()
-				#plt.show()
+				plt.clf()  # clears the entire current figure with all its axes
+				plt.cla()  # clear currently active axes in the current figure
+				plt.close()  # closes a window, which will be the current window
+
+			else:
+				print(f'-> for single_scen_per_month plots save plot is = no, so we show the plots for each single month on the screen')
+				plt.show()
 
 		#if ( all_months_per_scenario_plot == 'yes' ) :
 		else:
@@ -288,7 +291,7 @@ if ( spatial_plot_type == 'fires' ) :
 
 			plt.title(f'Spatial distribution of fires in LANDIS scenario {scenario_no}' , fontsize=10 )
 
-			plot_name = 'spatial_distribution_of_fires_for_allMonths_and_scen_'+scenario_no+'_'+my_domain+'.'+plot_format
+			plot_name = 'spatial_distribution_of_fires_for_allMonths_and_scen_'+scenario_no+'_'+basemap_domain+'.'+plot_format
 
 			#===========================================================
 			# save the plot
@@ -328,7 +331,9 @@ if (spatial_plot_type=='marker') :
 		print(" ")
 		print(f'-> final plot saved at=')
 		print(saved_plot)
-		#plt.show()
+
+	else:
+		plt.show()
 
 #================================================================================================================
 
@@ -388,18 +393,18 @@ if ( spatial_plot_type == 'mesh' ) :
 
 	if ( mesh_type=='station_inside_cell' ) :
 
-		lon_diff_arr=lon_cross_array-stn_lon
-		lat_diff_arr=lat_cross_array-stn_lat
+		lon_diff_arr= lon_cross_array - stn_lon
+		lat_diff_arr= lat_cross_array - stn_lat
 
 		#print(f'-> type of {lon_diff_arr} is= {type(lon_diff_arr)} ')
 
-		total_diff_arr=np.abs( lon_diff_arr ) + np.abs( lat_diff_arr )
+		total_diff_arr= np.abs( lon_diff_arr ) + np.abs( lat_diff_arr )
 
-		tuple_of_row_col_of_cell=np.argwhere( total_diff_arr==np.min(total_diff_arr) )[0]
+		tuple_of_row_col_of_cell= np.argwhere( total_diff_arr == np.min(total_diff_arr) )[0]
 
 		print(f'-> row/col of our cell is= {tuple_of_row_col_of_cell} ')
-		stn_row=tuple_of_row_col_of_cell[0]
-		stn_col=tuple_of_row_col_of_cell[1]
+		stn_row= tuple_of_row_col_of_cell[0]
+		stn_col= tuple_of_row_col_of_cell[1]
 
 		print(f'-> station row is= {stn_row}')
 		print(f'-> station row is= {stn_col}')
